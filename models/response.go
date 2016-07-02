@@ -1,10 +1,11 @@
 package models
 
-import "time"
+import (
+	"github.com/jinzhu/gorm"
+)
 
 type Response struct {
-	ID         string    `json:"id",validate:len=32`
-	PollItemID string    `json:"poll_item_id"`
-	Timestamp  time.Time `json:"timestamp"`
-	IpAddress  string    `json:ip_address"`
+	gorm.Model
+	ItemID    string `json:"item_id"`
+	IpAddress string `json:ip_address"`
 }

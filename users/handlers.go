@@ -1,14 +1,14 @@
 package users
 
 import (
-	"net/http"
 	"encoding/json"
 	"log"
+	"net/http"
 
 	"github.com/eirwin/polling-machine/models"
 
-	"github.com/pborman/uuid"
 	"github.com/gorilla/mux"
+	"strconv"
 )
 
 const (
@@ -17,12 +17,12 @@ const (
 	// APIBase is the base path for API access
 	APIBase = "/api/v1/"
 
-	UserPath = APIBase + "users"
+	UserPath  = APIBase + "users"
 	UsersByID = APIBase + "users" + ByID
 )
 
 //CreateUserHandler
-func CreateUserHandler(w http.ResponseWriter, r *http.Request)  {
+func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&user); err != nil {
@@ -30,8 +30,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request)  {
 	}
 
 	service := NewService()
-	user,err := service.Create(
-		uuid.NewUUID().String(),
+	user, err := service.Create(
 		user.Email,
 		user.Password)
 
@@ -47,12 +46,18 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request)  {
 }
 
 //GetUserByIdHandler
-func GetUserByIdHandler(w http.ResponseWriter,r *http.Request)  {
+func GetUserByIdHandler(w http.ResponseWriter, r *http.Request) {
+
 	vars := mux.Vars(r)
-	id := vars["id"]
+	id, err := strconv.Atoi(vars["id"])
+
+	if err != nil {
+		log.Fatal("invalid id format")
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 
 	service := NewService()
-	user,err := service.Get(id)
+	user, err := service.Get(id)
 	if err != nil {
 		log.Fatal(err)
 	}

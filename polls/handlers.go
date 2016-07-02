@@ -1,29 +1,29 @@
 package polls
 
 import (
-	"net/http"
-	"github.com/eirwin/polling-machine/models"
 	"encoding/json"
-	"github.com/pborman/uuid"
+	"github.com/eirwin/polling-machine/models"
 	"github.com/gorilla/mux"
+	"github.com/pborman/uuid"
+	"net/http"
 	"time"
 )
 
 const (
-	ByID = "/{id}"
+	ByID         = "/{id}"
 	ByPollItemID = "/{item_id}"
 
 	// APIBase is the base path for API access
 	APIBase = "/api/v1/"
 
-	PollsPath = APIBase + "polls"
-	PollsByID = APIBase + "polls" + ByID
-	PollItems = APIBase + "polls" + ByID + "/items"
+	PollsPath    = APIBase + "polls"
+	PollsByID    = APIBase + "polls" + ByID
+	PollItems    = APIBase + "polls" + ByID + "/items"
 	PollItemById = APIBase + "polls" + ByID + "/items" + ByPollItemID
 	PollResponse = APIBase + "polls" + ByID + "/responses"
 )
 
-func CreatePollHandler(w http.ResponseWriter,r *http.Request)  {
+func CreatePollHandler(w http.ResponseWriter, r *http.Request) {
 	var poll models.Poll
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&poll); err != nil {
@@ -32,7 +32,7 @@ func CreatePollHandler(w http.ResponseWriter,r *http.Request)  {
 
 	service := NewService()
 
-	poll,err := service.CreatePoll(uuid.NewUUID().String(),poll.CreatedBy,poll.Start,poll.End)
+	poll, err := service.CreatePoll(uuid.NewUUID().String(), poll.UserID, poll.Start, poll.End)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
@@ -44,13 +44,13 @@ func CreatePollHandler(w http.ResponseWriter,r *http.Request)  {
 	}
 }
 
-func GetPollByIDHandler(w http.ResponseWriter,r *http.Request)  {
+func GetPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
 	service := NewService()
 
-	poll,err := service.GetPoll(id)
+	poll, err := service.GetPoll(id)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
@@ -62,7 +62,7 @@ func GetPollByIDHandler(w http.ResponseWriter,r *http.Request)  {
 	}
 }
 
-func CreatePollItemHandler(w http.ResponseWriter,r *http.Request)  {
+func CreatePollItemHandler(w http.ResponseWriter, r *http.Request) {
 	var item models.Item
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&item); err != nil {
@@ -71,7 +71,7 @@ func CreatePollItemHandler(w http.ResponseWriter,r *http.Request)  {
 
 	service := NewService()
 
-	item,err := service.CreateItem(uuid.NewUUID().String(),item.PollID,item.Value,item.Display)
+	item, err := service.CreateItem(uuid.NewUUID().String(), item.PollID, item.Value, item.Display)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
@@ -83,13 +83,13 @@ func CreatePollItemHandler(w http.ResponseWriter,r *http.Request)  {
 	}
 }
 
-func GetPollItemByIDHandler(w http.ResponseWriter,r *http.Request)  {
+func GetPollItemByIDHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
 	service := NewService()
 
-	item,err := service.GetPollItem(id)
+	item, err := service.GetPollItem(id)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
@@ -101,7 +101,7 @@ func GetPollItemByIDHandler(w http.ResponseWriter,r *http.Request)  {
 	}
 }
 
-func CreatePollResponseHandler(w http.ResponseWriter,r *http.Request)  {
+func CreatePollResponseHandler(w http.ResponseWriter, r *http.Request) {
 	var response models.Response
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&response); err != nil {
@@ -110,7 +110,7 @@ func CreatePollResponseHandler(w http.ResponseWriter,r *http.Request)  {
 
 	service := NewService()
 
-	response,err := service.CreateResponse(uuid.NewUUID().String(),response.PollItemID,response.IpAddress,time.Now())
+	response, err := service.CreateResponse(uuid.NewUUID().String(), response.ItemID, response.IpAddress, time.Now())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}

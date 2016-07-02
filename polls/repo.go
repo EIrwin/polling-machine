@@ -3,31 +3,30 @@ package polls
 import (
 	"database/sql"
 	"fmt"
-	"os"
-	"log"
 	"github.com/eirwin/polling-machine/models"
+	"log"
+	"os"
 	"time"
 )
 
-type Repo interface  {
+type Repo interface {
 	//polls
-	CreatePoll(id,created_by string,start,end time.Time) (models.Poll,error)
-	GetPoll(id string) (models.Poll,error)
+	CreatePoll(id, created_by string, start, end time.Time) (models.Poll, error)
+	GetPoll(id string) (models.Poll, error)
 
 	//poll items
-	CreateItem(id,poll_id,value,display string) (models.Item,error)
-	GetPollItem(id string) (models.Item,error)
+	CreateItem(id, poll_id, value, display string) (models.Item, error)
+	GetPollItem(id string) (models.Item, error)
 
 	//poll responses
-	CreateResponse(id,item_id,ip_address string,timestamp time.Time,) (models.Response,error)
+	CreateResponse(id, item_id, ip_address string, timestamp time.Time) (models.Response, error)
 }
 
-type pollRepo struct  {
-	
+type pollRepo struct {
 }
 
-func (repo *pollRepo) CreatePoll(id,created_by string,start,end time.Time) (models.Poll,error) {
-	_,err := getDatabase()
+func (repo *pollRepo) CreatePoll(id, created_by string, start, end time.Time) (models.Poll, error) {
+	_, err := getDatabase()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -36,11 +35,11 @@ func (repo *pollRepo) CreatePoll(id,created_by string,start,end time.Time) (mode
 
 	//sql
 
-	return  poll,nil
+	return poll, nil
 }
 
-func (repo *pollRepo) GetPoll(id string) (models.Poll,error)  {
-	_,err := getDatabase()
+func (repo *pollRepo) GetPoll(id string) (models.Poll, error) {
+	_, err := getDatabase()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -49,11 +48,11 @@ func (repo *pollRepo) GetPoll(id string) (models.Poll,error)  {
 
 	//sql
 
-	return  poll,nil
+	return poll, nil
 }
 
-func (repo *pollRepo) CreateItem(id,poll_id,value,display string) (models.Item,error)  {
-	_,err := getDatabase()
+func (repo *pollRepo) CreateItem(id, poll_id, value, display string) (models.Item, error) {
+	_, err := getDatabase()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -62,11 +61,11 @@ func (repo *pollRepo) CreateItem(id,poll_id,value,display string) (models.Item,e
 
 	//sql
 
-	return  item,nil
+	return item, nil
 }
 
-func (repo *pollRepo) GetPollItem(id string) (models.Item,error)  {
-	_,err := getDatabase()
+func (repo *pollRepo) GetPollItem(id string) (models.Item, error) {
+	_, err := getDatabase()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -75,11 +74,11 @@ func (repo *pollRepo) GetPollItem(id string) (models.Item,error)  {
 
 	//sql
 
-	return  item,nil
+	return item, nil
 }
 
-func (repo *pollRepo) CreateResponse(id,item_id,ip_address string,timestamp time.Time,) (models.Response,error)  {
-	_,err := getDatabase()
+func (repo *pollRepo) CreateResponse(id, item_id, ip_address string, timestamp time.Time) (models.Response, error) {
+	_, err := getDatabase()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -88,10 +87,10 @@ func (repo *pollRepo) CreateResponse(id,item_id,ip_address string,timestamp time
 
 	//sql
 
-	return  response,nil
+	return response, nil
 }
 
-func getDatabase() (*sql.DB,error){
+func getDatabase() (*sql.DB, error) {
 	connInfo := fmt.Sprintf(
 		"user=%s dbname=%s password=%s host=%s port=%s sslmode=disable",
 		"postgres",
@@ -109,9 +108,9 @@ func getDatabase() (*sql.DB,error){
 		log.Fatal(err)
 	}
 
-	return  db,nil
+	return db, nil
 }
 
-func NewRepo() (Repo,error) {
-	return &pollRepo{},nil
+func NewRepo() (Repo, error) {
+	return &pollRepo{}, nil
 }
