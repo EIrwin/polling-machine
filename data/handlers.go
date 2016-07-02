@@ -7,11 +7,13 @@ import (
 	"log"
 	"os"
 	"github.com/eirwin/polling-machine/models"
+	"encoding/json"
 )
 
 const (
 
 	HealthCheck = "/ping"
+	Connection = "/info"
 
 	// APIBase is the base path for API access
 	APIBase = "/api/v1/"
@@ -20,9 +22,7 @@ const (
 
 	HealthCheckPath = APIBase + "data" + HealthCheck
 
-
-
-
+	ConnectionInfoPath = APIBase + "data" + Connection
 )
 
 type ConnectionInfo struct {
@@ -43,6 +43,16 @@ func InitializeDatabaseHealthCheckHandler(w http.ResponseWriter,r *http.Request)
 	conn := getConnectionInfo()
 	_ = getDatabase(conn)
 	w.WriteHeader(http.StatusOK)
+}
+
+func InitializeDiscoverConnectionHandler(w http.ResponseWriter,r *http.Request)  {
+	conn := getConnectionInfo()
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(conn); err != nil {
+		panic(err)
+	}
 }
 
 func initDB(db *gorm.DB)  {

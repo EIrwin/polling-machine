@@ -8,7 +8,7 @@ store:
     image: postgres:latest # reuse postgres container
     volumes:
         - /var/lib/postgresql/data
-        - ./db/postgres-setup.sql/docker-entrypoint-initdb.d/setup.sql
+#        - ./db/postgres-setup.sql/docker-entrypoint-initdb.d/setup.sql
     command: "true"
 
 postgres:

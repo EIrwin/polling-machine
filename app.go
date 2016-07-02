@@ -48,6 +48,9 @@ func main(){
 	// router handler for initialize database health check
 	router.HandleFunc(data.HealthCheckPath,data.InitializeDatabaseHealthCheckHandler).Methods("GET")
 
+	// router handler for database connection info
+	router.HandleFunc(data.ConnectionInfoPath,data.InitializeDiscoverConnectionHandler).Methods("GET")
+
 
 	//n.Use(statsMiddleware)
 	n.UseHandler(router)
