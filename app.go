@@ -3,9 +3,10 @@ package main
 import (
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
-	"github.com/thoas/stats"
+	//"github.com/thoas/stats"
 	"github.com/eirwin/polling-machine/users"
 	"github.com/eirwin/polling-machine/polls"
+	"github.com/eirwin/polling-machine/data"
 )
 
 func main(){
@@ -15,7 +16,7 @@ func main(){
 		negroni.NewLogger(),
 	)
 
-	statsMiddleware := stats.New()
+	//statsMiddleware := stats.New()
 
 	// create the router
 	router := mux.NewRouter()
@@ -41,7 +42,14 @@ func main(){
 	// router handler for creating poll responses
 	router.HandleFunc(polls.PollResponse,polls.CreatePollResponseHandler).Methods("POST")
 
-	n.Use(statsMiddleware)
+	// router handler for initializing database
+	router.HandleFunc(data.DataPath,data.InitializeDatabaseHandler).Methods("POST")
+
+	// router handler for initialize database health check
+	router.HandleFunc(data.HealthCheckPath,data.InitializeDatabaseHealthCheckHandler).Methods("GET")
+
+
+	//n.Use(statsMiddleware)
 	n.UseHandler(router)
 	n.Run(":8181")
 }

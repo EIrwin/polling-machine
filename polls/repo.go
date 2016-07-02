@@ -26,7 +26,7 @@ type pollRepo struct  {
 	
 }
 
-func CreatePoll(id,created_by string,start,end time.Time) (models.Poll,error) {
+func (repo *pollRepo) CreatePoll(id,created_by string,start,end time.Time) (models.Poll,error) {
 	_,err := getDatabase()
 	if err != nil {
 		log.Fatal(err)
@@ -39,7 +39,7 @@ func CreatePoll(id,created_by string,start,end time.Time) (models.Poll,error) {
 	return  poll,nil
 }
 
-func GetPoll(id string) (models.Poll,error)  {
+func (repo *pollRepo) GetPoll(id string) (models.Poll,error)  {
 	_,err := getDatabase()
 	if err != nil {
 		log.Fatal(err)
@@ -52,7 +52,7 @@ func GetPoll(id string) (models.Poll,error)  {
 	return  poll,nil
 }
 
-func CreateItem(id,poll_id,value,display string) (models.Item,error)  {
+func (repo *pollRepo) CreateItem(id,poll_id,value,display string) (models.Item,error)  {
 	_,err := getDatabase()
 	if err != nil {
 		log.Fatal(err)
@@ -65,7 +65,7 @@ func CreateItem(id,poll_id,value,display string) (models.Item,error)  {
 	return  item,nil
 }
 
-func GetPollItem(id string) (models.Item,error)  {
+func (repo *pollRepo) GetPollItem(id string) (models.Item,error)  {
 	_,err := getDatabase()
 	if err != nil {
 		log.Fatal(err)
@@ -78,7 +78,7 @@ func GetPollItem(id string) (models.Item,error)  {
 	return  item,nil
 }
 
-func CreateResponse(id,item_id,ip_address string,timestamp time.Time,) (models.Response,error)  {
+func (repo *pollRepo) CreateResponse(id,item_id,ip_address string,timestamp time.Time,) (models.Response,error)  {
 	_,err := getDatabase()
 	if err != nil {
 		log.Fatal(err)
@@ -109,7 +109,7 @@ func getDatabase() (*sql.DB,error){
 		log.Fatal(err)
 	}
 
-	return  db
+	return  db,nil
 }
 
 func NewRepo() (Repo,error) {

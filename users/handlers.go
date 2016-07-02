@@ -15,7 +15,7 @@ const (
 	ByID = "/{id}"
 
 	// APIBase is the base path for API access
-	APIBase = "/api/v1/
+	APIBase = "/api/v1/"
 
 	UserPath = APIBase + "users"
 	UsersByID = APIBase + "users" + ByID
@@ -30,10 +30,14 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request)  {
 	}
 
 	service := NewService()
-	user = service.Create(
+	user,err := service.Create(
 		uuid.NewUUID().String(),
 		user.Email,
 		user.Password)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)

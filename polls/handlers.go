@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"github.com/pborman/uuid"
 	"github.com/gorilla/mux"
+	"time"
 )
 
 const (
@@ -13,7 +14,7 @@ const (
 	ByPollItemID = "/{item_id}"
 
 	// APIBase is the base path for API access
-	APIBase = "/api/v1/
+	APIBase = "/api/v1/"
 
 	PollsPath = APIBase + "polls"
 	PollsByID = APIBase + "polls" + ByID
@@ -63,7 +64,7 @@ func GetPollByIDHandler(w http.ResponseWriter,r *http.Request)  {
 
 func CreatePollItemHandler(w http.ResponseWriter,r *http.Request)  {
 	var item models.Item
-	decoder := json.NewDecoder(&item)
+	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&item); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
@@ -102,14 +103,14 @@ func GetPollItemByIDHandler(w http.ResponseWriter,r *http.Request)  {
 
 func CreatePollResponseHandler(w http.ResponseWriter,r *http.Request)  {
 	var response models.Response
-	decoder := json.NewDecoder(&response)
+	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&response); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	service := NewService()
 
-	response,err := service.CreateResponse(uuid.NewUUID().String(),response.PollItemID,response.IpAddress,response.Timestamp)
+	response,err := service.CreateResponse(uuid.NewUUID().String(),response.PollItemID,response.IpAddress,time.Now())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}

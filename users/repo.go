@@ -13,7 +13,7 @@ import (
 )
 
 type Repo interface  {
-	Create(email,password string) (models.User,error)
+	Create(id,email,password string) (models.User,error)
 	Get(id string) (models.User,error)
 
 }
@@ -38,7 +38,7 @@ func (u *userRepository) Create(id,email,password string) (models.User,error)  {
 		log.Fatal(err)
 	}
 
-	return  user
+	return  user,nil
 }
 
 func (u *userRepository) Get(id string)(models.User,error)  {
@@ -65,7 +65,7 @@ func (u *userRepository) Get(id string)(models.User,error)  {
 	//	//fmt.Fprintf(resp, "ID: %d\n", id)
 	//}
 
-	return  user
+	return  user,nil
 }
 
 func getDatabase() (*sql.DB,error){
@@ -86,7 +86,7 @@ func getDatabase() (*sql.DB,error){
 		log.Fatal(err)
 	}
 
-	return  db
+	return  db,nil
 }
 
 func NewRepo() (Repo,error)   {
