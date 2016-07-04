@@ -20,7 +20,6 @@ angular.module('yapp')
             loadItem(model.poll_id,model.item_id);
         }
         
-        
         function save(value,display) {
             var pollId = $scope.model.poll_id;
             var itemId = $scope.model.item_id;

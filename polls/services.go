@@ -21,7 +21,7 @@ type Service interface {
 
 
 	//poll responses
-	CreateResponse(item_id int, ip_address string) (models.Response, error)
+	CreateResponse(item_id,poll_id int, ip_address string) (models.Response, error)
 }
 
 type service struct {
@@ -94,11 +94,14 @@ func (s *service) DeleteItem(id int) (error)  {
 
 	return nil
 }
-func (s *service) CreateResponse(item_id int, ip_address string) (models.Response, error) {
-	response, err := s.polls.CreateResponse(item_id, ip_address)
+func (s *service) CreateResponse(item_id,poll_id int, ip_address string) (models.Response, error) {
+	response, err := s.polls.CreateResponse(item_id,poll_id, ip_address)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	//TODO: Do dupe check here on IP
+
 	return response, nil
 }
 

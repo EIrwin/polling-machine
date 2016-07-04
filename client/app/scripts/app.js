@@ -61,6 +61,12 @@ angular
             templateUrl:'views/edit_item.html',
             controller:'EditItemCtrl'
         })
+        .state('share',{
+            url:'/share/:id',
+            parent:'base',
+            templateUrl:'views/share.html',
+            controller:'ShareCtrl'
+        })
         .state('polls',{
             url: '/polls',
             parent: 'dashboard',

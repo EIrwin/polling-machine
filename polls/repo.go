@@ -22,7 +22,7 @@ type Repo interface {
 	DeleteItem(id int) (error)
 
 	//poll responses
-	CreateResponse(item_id int, ip_address string) (models.Response, error)
+	CreateResponse(item_id,poll_id int, ip_address string) (models.Response, error)
 }
 
 type pollRepo struct {
@@ -156,7 +156,7 @@ func (repo *pollRepo) DeleteItem(id int) (error)  {
 	return nil
 }
 
-func (repo *pollRepo) CreateResponse(item_id int, ip_address string) (models.Response, error) {
+func (repo *pollRepo) CreateResponse(item_id,poll_id int, ip_address string) (models.Response, error) {
 	conn := data.GetConnectionInfo()
 	_, err := data.GetDatabase(conn)
 	if err != nil {
@@ -165,6 +165,7 @@ func (repo *pollRepo) CreateResponse(item_id int, ip_address string) (models.Res
 
 	response := models.Response{
 		ItemID:item_id,
+		PollID:poll_id,
 		IpAddress:ip_address,
 	}
 

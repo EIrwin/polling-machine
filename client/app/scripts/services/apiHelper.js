@@ -15,6 +15,7 @@ angular.module('yapp')
         user:baseApiUrl + '/users/:id',
         polls:baseApiUrl + '/polls',
         poll:baseApiUrl + '/polls/:id',
+        responses:baseApiUrl + '/polls/:id/responses',
         login:baseApiUrl + '/login'
     }
 

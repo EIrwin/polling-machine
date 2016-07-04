@@ -218,12 +218,14 @@ func CreatePollResponseHandler(w http.ResponseWriter, r *http.Request) {
 	var response models.Response
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&response); err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	service := NewService()
 
-	response, err := service.CreateResponse(response.ItemID, r.RemoteAddr)
+	log.Println(response);
+	response, err := service.CreateResponse(response.ItemID,response.PollID,r.RemoteAddr)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
