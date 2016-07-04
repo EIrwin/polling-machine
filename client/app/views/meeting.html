@@ -1,0 +1,34 @@
+<!--
+Inspired by http://dribbble.com/shots/917819-iPad-Calendar-Login?list=shots&sort=views&timeframe=ever&offset=461
+-->
+<div class="login-page">
+	<div class="row">
+		<div class="col-md-4 col-lg-4 col-md-offset-4 col-lg-offset-4">
+        	<img src="images/flat-avatar.png" class="user-avatar" />
+			<h1>{{model.meeting.total | currency}}</h1>
+			<h3 ng-if="model.meeting.attendees.length > 1">{{model.meeting.attendees.length}} Attendees</h3>
+			<h3 ng-if="model.meeting.attendees.length == 1">{{model.meeting.attendees.length}} Attendee</h3>
+			<h4>{{model.meeting.elapsedMinutes | number : 2}} minutes</h4>
+			<h4>{{(model.meeting.total / model.meeting.attendees.length) | currency}} per attendee</h4>
+			<div ng-if="model.meeting != null">
+				<button type="button"
+								class="btn btn-white btn-outline btn-lg btn-rounded"
+								ng-show="showStartMeetingButton()"
+								ng-click="startMeeting(model.meeting.id)"> Start Meeting </button>
+			</div>
+			<div ng-if="model.meeting != null">
+				<button type="button"
+								class="btn btn-white btn-outline btn-lg btn-rounded"
+								ng-show="showEndMeetingButton()"
+								ng-click="endMeeting(model.meeting.id)"> End Meeting </button>
+			</div>
+			<div ng-if="model.meeting != null">
+				<button type="button" class="btn btn-white btn-outline btn-lg btn-rounded" ng-click="leaveMeeting(model.meeting.id)">Leave Meeting</button>
+			</div>
+
+
+
+		</div>
+	</div>
+
+</div>

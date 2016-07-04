@@ -8,30 +8,35 @@ import (
 
 type Service interface {
 	//polls
-	CreatePoll(id, created_by string, start, end time.Time) (models.Poll, error)
-	GetPoll(id string) (models.Poll, error)
+	CreatePoll(user_id int,end time.Time,title string) (models.Poll, error)
+	GetPoll(id int) (models.Poll, error)
+	GetPollByUser(user_id int) ([]models.Poll,error)
 
 	//poll items
-	CreateItem(id, poll_id, value, display string) (models.Item, error)
-	GetPollItem(id string) (models.Item, error)
+	CreateItem(poll_id int, value, display string) (models.Item, error)
+	GetPollItem(id int) (models.Item, error)
+	GetPollItemsByPollID(poll_id int) ([]models.Item,error)
+	UpdatePollItem(id,poll_id int,value,display string) (models.Item,error)
+	DeleteItem(id int) (error)
+
 
 	//poll responses
-	CreateResponse(id, item_id, ip_address string, timestamp time.Time) (models.Response, error)
+	CreateResponse(item_id int, ip_address string) (models.Response, error)
 }
 
 type service struct {
 	polls Repo
 }
 
-func (s *service) CreatePoll(id, created_by string, start, end time.Time) (models.Poll, error) {
-	poll, err := s.polls.CreatePoll(id, created_by, start, end)
+func (s *service) CreatePoll(user_id int,end time.Time,title string) (models.Poll, error) {
+	poll, err := s.polls.CreatePoll(user_id,time.Now(), end,title)
 	if err != nil {
 		log.Fatal(err)
 	}
 	return poll, nil
 }
 
-func (s *service) GetPoll(id string) (models.Poll, error) {
+func (s *service) GetPoll(id int) (models.Poll, error) {
 	poll, err := s.polls.GetPoll(id)
 	if err != nil {
 		log.Fatal(err)
@@ -39,15 +44,25 @@ func (s *service) GetPoll(id string) (models.Poll, error) {
 	return poll, nil
 }
 
-func (s *service) CreateItem(id, poll_id, value, display string) (models.Item, error) {
-	item, err := s.polls.CreateItem(id, poll_id, value, display)
+func (s *service) GetPollByUser(user_id int) ([]models.Poll,error)  {
+	polls,err := s.polls.GetPollsByUser(user_id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(polls)
+	return  polls,nil
+}
+
+func (s *service) CreateItem(poll_id int, value, display string) (models.Item, error) {
+	item, err := s.polls.CreateItem(poll_id, value, display)
+	log.Println(item)
 	if err != nil {
 		log.Fatal(err)
 	}
 	return item, nil
 }
 
-func (s *service) GetPollItem(id string) (models.Item, error) {
+func (s *service) GetPollItem(id int) (models.Item, error) {
 	item, err := s.polls.GetPollItem(id)
 	if err != nil {
 		log.Fatal(err)
@@ -55,8 +70,32 @@ func (s *service) GetPollItem(id string) (models.Item, error) {
 	return item, nil
 }
 
-func (s *service) CreateResponse(id, item_id, ip_address string, timestamp time.Time) (models.Response, error) {
-	response, err := s.polls.CreateResponse(id, item_id, ip_address, timestamp)
+func (s *service) GetPollItemsByPollID(poll_id int) ([]models.Item,error)  {
+	items,err := s.polls.GetPollItemsByPollID(poll_id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return items,nil
+}
+
+func (s *service) UpdatePollItem(id,poll_id int,value,display string) (models.Item,error)  {
+	item,err := s.polls.UpdatePollItem(id,poll_id,value,display)
+	if err != nil {
+		log.Println("here")
+		log.Fatal(err)
+	}
+	return item,nil
+}
+func (s *service) DeleteItem(id int) (error)  {
+	err := s.polls.DeleteItem(id)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return nil
+}
+func (s *service) CreateResponse(item_id int, ip_address string) (models.Response, error) {
+	response, err := s.polls.CreateResponse(item_id, ip_address)
 	if err != nil {
 		log.Fatal(err)
 	}

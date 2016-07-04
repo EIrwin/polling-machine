@@ -1,0 +1,33 @@
+<!--
+Inspired by http://dribbble.com/shots/917819-iPad-Calendar-Login?list=shots&sort=views&timeframe=ever&offset=461
+-->
+<div class="login-page">
+	<div class="row">
+		<div class="col-lg-4 col-md-offset-4 col-lg-offset-4">
+        	<img src="images/flat-avatar.png" class="user-avatar" />
+			<h1>Edit Poll</small></h1>
+			<div>
+				<div class="form-content">
+					<div class="form-group">
+						<input type="text" placeholder="Enter your title here" name="title" class="form-control input-underline input-lg" ng-model="model.poll.title">
+						<input type="text" placeholder="Enter when you want your poll to end" class="form-control input-underline input-lg" ng-model="model.poll.end">
+					</div>
+					<div class="form-group">
+						<div ng-repeat="item in model.items">
+							<div class="item-value">
+								{{item.display}}
+							</div>
+							<div>
+								<a style="color:white;" ui-sref="item-edit({poll_id:model.poll.ID,item_id:item.ID})">Edit</a>
+								<a style="color:white;" ng-click="deleteItem(model.poll.ID,item.ID)">Delete</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<button  class="btn btn-white btn-outline btn-lg btn-rounded" ng-click="save(model.poll.ID,model.poll.title,model.poll.end)">Save Poll</button>
+				<button  class="btn btn-white btn-outline btn-lg btn-rounded" ui-sref="item-create({poll_id:model.poll.ID})">Add Item</button>
+				<button  class="btn btn-white btn-outline btn-lg btn-rounded">Cancel</button>
+			</div>
+		</div>
+	</div>
+</div>

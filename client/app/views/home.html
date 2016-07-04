@@ -1,0 +1,34 @@
+<div class="dashboard-page">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-3 col-md-2 sidebar">
+
+       <div class="text-center">
+        <h2 class="brand">Ani Theme <small>Free Edition</small></h2>
+        <img src="images/flat-avatar.png" class="user-avatar" /><br />
+        <a ui-sref="login" class="btn btn-white btn-outline btn-rounded btn-sm">Logout</a>
+      </div>
+
+      <ul class="nav nav-sidebar">
+        <li><a ui-sref="polls-create">Create New Poll</a></li>
+      </ul>
+
+    </div>
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" ui-view>
+        <h1 class="brand">Your Polls</h1>
+        <div ng-repeat="poll in model.polls">
+            <div class="row">
+                <div class="col-sm-3">{{poll.title}}</div>
+                <div class="col-sm-3">{{poll.end}}</div>
+                <div class="col-sm-1">
+                    <a href="#" ng-click="edit(poll.ID)">Edit</a>
+                </div>
+                <div class="col-sm-1">
+                    <a href="#" ng-click="disable(poll.ID)">Disable</a>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+</div>

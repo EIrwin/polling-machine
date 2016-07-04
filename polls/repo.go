@@ -1,115 +1,176 @@
 package polls
 
 import (
-	"database/sql"
-	"fmt"
+
 	"github.com/eirwin/polling-machine/models"
 	"log"
-	"os"
 	"time"
+	"github.com/eirwin/polling-machine/data"
 )
 
 type Repo interface {
 	//polls
-	CreatePoll(id, created_by string, start, end time.Time) (models.Poll, error)
-	GetPoll(id string) (models.Poll, error)
+	CreatePoll(user_id int, start, end time.Time,title string) (models.Poll, error)
+	GetPoll(id int) (models.Poll, error)
+	GetPollsByUser(user_id int) ([]models.Poll,error)
 
-	//poll items
-	CreateItem(id, poll_id, value, display string) (models.Item, error)
-	GetPollItem(id string) (models.Item, error)
+	//poll itemsr
+	CreateItem(poll_id int, value, display string) (models.Item, error)
+	GetPollItem(id int) (models.Item, error)
+	GetPollItemsByPollID(poll_id int) ([]models.Item,error)
+	UpdatePollItem(id,poll_id int,value,display string) (models.Item,error)
+	DeleteItem(id int) (error)
 
 	//poll responses
-	CreateResponse(id, item_id, ip_address string, timestamp time.Time) (models.Response, error)
+	CreateResponse(item_id int, ip_address string) (models.Response, error)
 }
 
 type pollRepo struct {
 }
 
-func (repo *pollRepo) CreatePoll(id, created_by string, start, end time.Time) (models.Poll, error) {
-	_, err := getDatabase()
+func (repo *pollRepo) CreatePoll(user_id int, start, end time.Time,title string) (models.Poll, error) {
+	conn := data.GetConnectionInfo()
+	db, err := data.GetDatabase(conn)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	poll := models.Poll{
+		Start:start,
+		End:end,
+		UserID:  user_id,
+		Title:title,
+	}
+
+	db.NewRecord(poll)
+
+	db.Create(&poll)
+
+	return poll, nil
+}
+
+func (repo *pollRepo) GetPoll(id int) (models.Poll, error) {
+	conn := data.GetConnectionInfo()
+	db, err := data.GetDatabase(conn)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	var poll models.Poll
 
-	//sql
+	db.First(&poll,id)
 
 	return poll, nil
 }
 
-func (repo *pollRepo) GetPoll(id string) (models.Poll, error) {
-	_, err := getDatabase()
+func (repo *pollRepo) GetPollsByUser(user_id int) ([]models.Poll,error)  {
+	conn := data.GetConnectionInfo()
+	db,err := data.GetDatabase(conn)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var poll models.Poll
+	var polls []models.Poll
 
-	//sql
-
-	return poll, nil
+	db.Where("user_id = ?",user_id).Find(&polls)
+	return  polls,nil
 }
 
-func (repo *pollRepo) CreateItem(id, poll_id, value, display string) (models.Item, error) {
-	_, err := getDatabase()
+func (repo *pollRepo) CreateItem(poll_id int, value, display string) (models.Item, error) {
+	conn := data.GetConnectionInfo()
+	db, err := data.GetDatabase(conn)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	item := models.Item{
+		PollID:poll_id,
+		Value:value,
+		Display:display,
+	}
+
+	db.NewRecord(item)
+
+	db.Create(&item)
+
+	return item, nil
+}
+
+func (repo *pollRepo) GetPollItem(id int) (models.Item, error) {
+	conn := data.GetConnectionInfo()
+	db, err := data.GetDatabase(conn)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	var item models.Item
-
-	//sql
+	item.ID = uint(id)
+	db.First(&item,id)
 
 	return item, nil
 }
 
-func (repo *pollRepo) GetPollItem(id string) (models.Item, error) {
-	_, err := getDatabase()
+func (repo *pollRepo) GetPollItemsByPollID(poll_id int) ([]models.Item,error)  {
+	conn := data.GetConnectionInfo()
+	db, err := data.GetDatabase(conn)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var items []models.Item
+
+	db.Where("poll_id = ?",poll_id).Find(&items)
+
+	return items, nil
+}
+
+func (repo *pollRepo) UpdatePollItem(id,poll_id int,value,display string) (models.Item,error)  {
+	conn := data.GetConnectionInfo()
+	db, err := data.GetDatabase(conn)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	var item models.Item
+	item.ID = uint(id)
+	item.PollID = poll_id
+	item.Value = value
+	item.Display = display
 
-	//sql
+	db.Save(&item)
 
 	return item, nil
 }
 
-func (repo *pollRepo) CreateResponse(id, item_id, ip_address string, timestamp time.Time) (models.Response, error) {
-	_, err := getDatabase()
+func (repo *pollRepo) DeleteItem(id int) (error)  {
+	conn := data.GetConnectionInfo()
+	db, err := data.GetDatabase(conn)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var response models.Response
+	var user models.User
+	user.ID = uint(id)
+	db.Delete(&user)
 
-	//sql
+	return nil
+}
+
+func (repo *pollRepo) CreateResponse(item_id int, ip_address string) (models.Response, error) {
+	conn := data.GetConnectionInfo()
+	_, err := data.GetDatabase(conn)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	response := models.Response{
+		ItemID:item_id,
+		IpAddress:ip_address,
+	}
 
 	return response, nil
 }
 
-func getDatabase() (*sql.DB, error) {
-	connInfo := fmt.Sprintf(
-		"user=%s dbname=%s password=%s host=%s port=%s sslmode=disable",
-		"postgres",
-		"postgres",
-		os.Getenv("DB_ENV_POSTGRES_PASSWORD"),
-		os.Getenv("POLL-MACHINE_POSTGRES_1_PORT_5432_TCP_ADDR"),
-		os.Getenv("POLL-MACHINE_POSTGRES_1_PORT_5432_TCP_PORT"),
-	)
-
-	log.Println(connInfo)
-
-	var err error
-	db, err := sql.Open("postgres", connInfo)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return db, nil
-}
 
 func NewRepo() (Repo, error) {
 	return &pollRepo{}, nil

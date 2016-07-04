@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"github.com/eirwin/polling-machine/models"
 	"github.com/gorilla/mux"
-	"github.com/pborman/uuid"
 	"net/http"
-	"time"
+	"strconv"
+	"log"
 )
 
 const (
@@ -26,14 +26,17 @@ const (
 func CreatePollHandler(w http.ResponseWriter, r *http.Request) {
 	var poll models.Poll
 	decoder := json.NewDecoder(r.Body)
+
 	if err := decoder.Decode(&poll); err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	service := NewService()
 
-	poll, err := service.CreatePoll(uuid.NewUUID().String(), poll.UserID, poll.Start, poll.End)
+	poll, err := service.CreatePoll(poll.UserID,poll.End,poll.Title)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
@@ -46,12 +49,17 @@ func CreatePollHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id := vars["id"]
+	id,err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Fatal("invalid poll id format")
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 
 	service := NewService()
 
 	poll, err := service.GetPoll(id)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
@@ -62,18 +70,39 @@ func GetPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func CreatePollItemHandler(w http.ResponseWriter, r *http.Request) {
-	var item models.Item
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&item); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+func GetPollsByUserIDHandler(w http.ResponseWriter,r *http.Request)  {
+	user_id,err := strconv.Atoi(r.FormValue("user_id"))
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	service := NewService()
 
-	item, err := service.CreateItem(uuid.NewUUID().String(), item.PollID, item.Value, item.Display)
+	polls,err := service.GetPollByUser(user_id)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		log.Println(err)
+		//w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(polls); err != nil {
+		panic(err)
+	}
+}
+
+func CreatePollItemHandler(w http.ResponseWriter, r *http.Request) {
+	var item models.Item
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&item); err != nil {
+		log.Fatal(err)
+	}
+
+	service := NewService()
+
+	item, err := service.CreateItem( item.PollID, item.Value, item.Display)
+	if err != nil {
+		log.Fatal(err);
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -85,7 +114,11 @@ func CreatePollItemHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetPollItemByIDHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id := vars["id"]
+	id,err := strconv.Atoi(vars["item_id"])
+	if err != nil {
+		log.Fatal("invalid poll id format")
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 
 	service := NewService()
 
@@ -101,6 +134,86 @@ func GetPollItemByIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func GetPollItemsByPollIDHandler(w http.ResponseWriter, r * http.Request)  {
+	vars := mux.Vars(r)
+	id,err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Fatal("invalid poll id format")
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	service := NewService()
+
+	items, err := service.GetPollItemsByPollID(id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(items); err != nil {
+		panic(err)
+	}
+}
+
+func UpdatePollItemHandler(w http.ResponseWriter,r * http.Request)  {
+	vars := mux.Vars(r)
+	id,err := strconv.Atoi(vars["item_id"])
+
+	if err != nil {
+		log.Fatal("invalid item id format")
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	poll_id,err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Fatal("invalid poll id format")
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	var item models.Item
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&item); err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	service := NewService()
+
+	items, err := service.UpdatePollItem(id,poll_id,item.Value,item.Display)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(items); err != nil {
+		panic(err)
+	}
+}
+
+func DeletePollItemHandler(w http.ResponseWriter, r * http.Request)  {
+	vars := mux.Vars(r)
+	id,err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Fatal("invalid poll id format")
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	service := NewService()
+
+	items, err := service.GetPollItemsByPollID(id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(items); err != nil {
+		panic(err)
+	}
+}
+
 func CreatePollResponseHandler(w http.ResponseWriter, r *http.Request) {
 	var response models.Response
 	decoder := json.NewDecoder(r.Body)
@@ -110,7 +223,7 @@ func CreatePollResponseHandler(w http.ResponseWriter, r *http.Request) {
 
 	service := NewService()
 
-	response, err := service.CreateResponse(uuid.NewUUID().String(), response.ItemID, response.IpAddress, time.Now())
+	response, err := service.CreateResponse(response.ItemID, r.RemoteAddr)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}

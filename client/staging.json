@@ -1,0 +1,3 @@
+{
+  "ENV": {"name": "staging", "apiEndpoint": "http://staging.thenaylormachine.com/api/v1"}
+}
