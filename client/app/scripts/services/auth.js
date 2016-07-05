@@ -33,6 +33,11 @@ angular.module('yapp')
           return d.promise;
       }
 
+      this.logout = function(){
+          User.clearToken();
+          User.clearCurrent();
+      }
+
     return self;
 
   });

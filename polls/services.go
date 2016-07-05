@@ -11,6 +11,7 @@ type Service interface {
 	CreatePoll(user_id int,end time.Time,title string) (models.Poll, error)
 	GetPoll(id int) (models.Poll, error)
 	GetPollByUser(user_id int) ([]models.Poll,error)
+	UpdatePoll(id,user_id int,start,end time.Time,title string) (models.Poll,error)
 
 	//poll items
 	CreateItem(poll_id int, value, display string) (models.Item, error)
@@ -22,6 +23,7 @@ type Service interface {
 
 	//poll responses
 	CreateResponse(item_id,poll_id int, ip_address string) (models.Response, error)
+	GetResponseCounts(poll_id int) ([]models.ResponseCount,error)
 }
 
 type service struct {
@@ -49,8 +51,15 @@ func (s *service) GetPollByUser(user_id int) ([]models.Poll,error)  {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(polls)
 	return  polls,nil
+}
+
+func (s *service) UpdatePoll(id,user_id int,start,end time.Time,title string) (models.Poll,error)  {
+	poll,err := s.polls.UpdatePoll(id,user_id,start,end,title)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return poll,nil
 }
 
 func (s *service) CreateItem(poll_id int, value, display string) (models.Item, error) {
@@ -81,7 +90,6 @@ func (s *service) GetPollItemsByPollID(poll_id int) ([]models.Item,error)  {
 func (s *service) UpdatePollItem(id,poll_id int,value,display string) (models.Item,error)  {
 	item,err := s.polls.UpdatePollItem(id,poll_id,value,display)
 	if err != nil {
-		log.Println("here")
 		log.Fatal(err)
 	}
 	return item,nil
@@ -103,6 +111,14 @@ func (s *service) CreateResponse(item_id,poll_id int, ip_address string) (models
 	//TODO: Do dupe check here on IP
 
 	return response, nil
+}
+
+func (s *service) GetResponseCounts(poll_id int) ([]models.ResponseCount,error)  {
+	counts,err := s.polls.GetResponseCounts(poll_id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return  counts,nil
 }
 
 func NewService() Service {

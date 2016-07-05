@@ -7,7 +7,7 @@ angular.module('yapp')
 
         this.createResponse = function(item_id,poll_id){
             var d = $q.defer();
-            var requestUrl = APIHelper.fillUrl(APIHelper.endpoints.responses, {id:poll_id});;
+            var requestUrl = APIHelper.fillUrl(APIHelper.endpoints.responses, {id:poll_id});
             var data = {
                 item_id:item_id,
                 poll_id:poll_id
@@ -30,20 +30,20 @@ angular.module('yapp')
             return d.promise;
         }
 
-        // this.getResponsesByPollId = function (pollId) {
-        //     var d = $q.defer();
-        //     var requestUrl = APIHelper.endpoints.polls + "?user_id=" + userId;
-        //     $http
-        //         .get(requestUrl)
-        //         .success(function(data,status,headers,config){
-        //             d.resolve(data);
-        //         })
-        //         .error(function(data,status,headers,config){
-        //             d.reject(data);
-        //         });
-        //     return d.promise;
-        // }
-
+        this.getResponseCounts = function(poll_id){
+            var d = $q.defer();
+            var requestUrl = APIHelper.fillUrl(APIHelper.endpoints.responseCount, {id:poll_id});
+            $http
+                .get(requestUrl)
+                .success(function(data,status,headers,config){
+                    d.resolve(data);
+                })
+                .error(function(data,status,headers,config){
+                    d.reject(data);
+                });
+            return d.promise;
+        }
+        
         return self;
     });
 

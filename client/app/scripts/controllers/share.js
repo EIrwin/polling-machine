@@ -26,7 +26,6 @@ angular.module('yapp')
       function loadPoll(id) {
         Polls.getPollById(id)
             .then(function(poll){
-                console.log(poll);
                 $scope.model.poll = poll;
             },function (error) {
                 $log.error(error);

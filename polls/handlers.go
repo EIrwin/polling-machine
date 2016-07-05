@@ -21,6 +21,7 @@ const (
 	PollItems    = APIBase + "polls" + ByID + "/items"
 	PollItemById = APIBase + "polls" + ByID + "/items" + ByPollItemID
 	PollResponse = APIBase + "polls" + ByID + "/responses"
+	ResponseCount = APIBase + "polls" + ByID + "/count"
 )
 
 func CreatePollHandler(w http.ResponseWriter, r *http.Request) {
@@ -90,6 +91,29 @@ func GetPollsByUserIDHandler(w http.ResponseWriter,r *http.Request)  {
 		panic(err)
 	}
 }
+
+func UpdatePollHandler(w http.ResponseWriter,r *http.Request)  {
+	var poll models.Poll
+	decoder := json.NewDecoder(r.Body)
+
+	if err := decoder.Decode(&poll); err != nil {
+		log.Println(err)
+	}
+
+	service := NewService()
+
+	poll, err := service.UpdatePoll(int(poll.ID),poll.UserID,poll.Start,poll.End,poll.Title)
+	if err != nil {
+		log.Println(err)
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(poll); err != nil {
+		panic(err)
+	}
+}
+
 
 func CreatePollItemHandler(w http.ResponseWriter, r *http.Request) {
 	var item models.Item
@@ -236,3 +260,27 @@ func CreatePollResponseHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 }
+
+func GetResponseCountsHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id,err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Fatal("invalid poll id format")
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	service := NewService()
+
+	counts, err := service.GetResponseCounts(id)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(counts); err != nil {
+		panic(err)
+	}
+}
+

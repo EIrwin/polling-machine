@@ -4,9 +4,9 @@
       <div class="col-sm-3 col-md-2 sidebar">
 
        <div class="text-center">
-        <h2 class="brand">Ani Theme <small>Free Edition</small></h2>
+        <h2 class="brand">Polling <small>Machine</small></h2>
         <img src="images/flat-avatar.png" class="user-avatar" /><br />
-        <a ui-sref="login" class="btn btn-white btn-outline btn-rounded btn-sm">Logout</a>
+        <a ng-click="logout()" class="btn btn-white btn-outline btn-rounded btn-sm">Logout</a>
       </div>
 
       <ul class="nav nav-sidebar">
@@ -20,6 +20,9 @@
             <div class="row">
                 <div class="col-sm-3">{{poll.title}}</div>
                 <div class="col-sm-3">{{poll.end}}</div>
+                <div class="col-sm-1">
+                    <a href="#" ui-sref="results({id:poll.ID})">Results</a>
+                </div>
                 <div class="col-sm-1">
                     <a href="#" ng-click="edit(poll.ID)">Edit</a>
                 </div>

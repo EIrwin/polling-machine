@@ -25,10 +25,11 @@ angular.module('yapp')
         }
         
         
-        function save(id,title,end) {
+        function save(id,user_id,start,end,title) {
             var userId = User.getCurrent().ID;
-            Polls.savePoll(id,title,end)
+            Polls.updatePoll(id,user_id,start,end,title)
                 .then(function (poll) {
+                    $log.info(poll);
                     $state.go('user-home',{id:userId});
                 },function (error) {
                     $log.error(error);

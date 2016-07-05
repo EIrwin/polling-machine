@@ -35,7 +35,11 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		user.Password)
 
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		if err.Error() == "duplicate email" {
+			log.Println(err)
+			w.WriteHeader(http.StatusBadRequest)
+		}
+		log.Fatal(err)
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")

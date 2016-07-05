@@ -7,6 +7,7 @@ import (
 
 	"github.com/eirwin/polling-machine/data"
 	_ "github.com/lib/pq"
+	"errors"
 )
 
 type Repo interface {
@@ -25,7 +26,17 @@ func (u *userRepository) Create(email, password string) (models.User, error) {
 		log.Fatal(err)
 	}
 
-	user := models.User{
+	var user models.User
+
+	//check if email exists
+	var count int
+	db.Model(&models.User{}).Where("email = ?",email).Count(&count)
+
+	if count > 0 {
+		return user,errors.New("duplicate email")
+	}
+
+	user = models.User{
 		Email:    email,
 		Password: password,
 	}

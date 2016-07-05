@@ -10,3 +10,10 @@ type Response struct {
 	PollID	  int `json:"poll_id,string"`
 	IpAddress string `json:ip_address"`
 }
+
+type ResponseCount struct {
+	ItemID	   int 	  `json:"item_id"`
+	Display    string `json:"display"`
+	Value	   string `json:"value""`
+	Count      int    `json:"count"`
+}

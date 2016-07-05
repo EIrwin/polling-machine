@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yapp')
-  .controller('HomeCtrl', function($scope, $state,$stateParams,Users,$log,Polls) {
+  .controller('HomeCtrl', function($scope, $state,$stateParams,Users,$log,Polls,Auth) {
 
 
       activate();
@@ -16,6 +16,7 @@ angular.module('yapp')
           $scope.model = model;
           $scope.edit = edit;
           $scope.disable = disable;
+          $scope.logout = logout;
 
           Users.getUserById(model.userId)
               .then(function (user) {
@@ -37,5 +38,10 @@ angular.module('yapp')
 
       function disable(id) {
         //TODO: Delete Polls
+      }
+      
+      function logout() {
+          Auth.logout();
+          $state.go('login');
       }
   });

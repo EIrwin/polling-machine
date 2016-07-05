@@ -36,6 +36,9 @@ func main() {
 	// route handler for retrieving polls by id
 	router.HandleFunc(polls.PollsByID, polls.GetPollByIDHandler).Methods("GET")
 
+	//router handler for updating polls
+	router.HandleFunc(polls.PollsByID,polls.UpdatePollHandler).Methods("PUT")
+
 	// route handler for retrieving polls by user id
 	router.HandleFunc(polls.PollsPath,polls.GetPollsByUserIDHandler).Methods("GET")
 
@@ -60,6 +63,8 @@ func main() {
 	// router handler for creating poll responses
 	router.HandleFunc(polls.PollResponse, polls.CreatePollResponseHandler).Methods("POST")
 
+	// router handler for response counts
+	router.HandleFunc(polls.ResponseCount,polls.GetResponseCountsHandler).Methods("GET")
 	// router handler for initializing database
 	router.HandleFunc(data.InitDataPath, data.InitializeDatabaseHandler).Methods("GET")
 
@@ -68,6 +73,7 @@ func main() {
 
 	// router handler for database connection info
 	router.HandleFunc(data.ConnectionInfoPath, data.InitializeDiscoverConnectionHandler).Methods("GET")
+
 
 	//n.Use(statsMiddleware)
 	n.Use(cors.New(cors.Options{

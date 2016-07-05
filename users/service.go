@@ -20,6 +20,11 @@ type service struct {
 func (s *service) Create(email, password string) (models.User, error) {
 	user, err := s.users.Create(email, password)
 	if err != nil {
+
+		if err.Error() == "duplicate email" {
+			return user,err
+		}
+
 		log.Fatal(err)
 	}
 	return user, nil
