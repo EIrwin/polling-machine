@@ -3,7 +3,6 @@
 angular.module('yapp')
     .controller('ResultsCtrl', function($scope,$log,APIHelper,$state,User,Polls,Responses) {
 
-
         activate();
 
         function activate() {
@@ -11,10 +10,15 @@ angular.module('yapp')
             var model = {
                 pollId:$state.params.id,
                 poll:null,
-                counts:[]
+                counts:[],
+                user_id:User.getCurrent().ID,
+                labels:[],
+                series:[],
+                data:[[]]
             };
 
             $scope.model = model;
+
 
             loadPoll(model.pollId);
 
@@ -24,6 +28,7 @@ angular.module('yapp')
         function loadPoll(poll_id) {
             Polls.getPollById(poll_id)
                 .then(function(poll){
+                    $scope.model.series.push(poll.title);
                     $scope.model.poll = poll;
                 },function(error){
                     $log.error(error);
@@ -33,6 +38,11 @@ angular.module('yapp')
         function loadResponseCounts(poll_id) {
             Responses.getResponseCounts(poll_id)
                 .then(function(counts){
+                    for(var i in counts){
+                        var count = counts[i]
+                        $scope.model.labels.push(count.display)
+                        $scope.model.data[0].push(count.count)
+                    }
                     $scope.model.counts = counts;
                 },function(error){
                     $log.error(error);

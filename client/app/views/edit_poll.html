@@ -10,6 +10,7 @@
 				</div>
 
 				<ul class="nav nav-sidebar">
+					<li><a ui-sref="user-home({id:model.user_id})">Home</a> </li>
 					<li><a ui-sref="polls-create">Create New Poll</a></li>
 				</ul>
 
@@ -23,20 +24,22 @@
 							<input type="text" placeholder="Enter when you want your poll to end" class="form-control input-underline input-lg" ng-model="model.poll.end">
 						</div>
 						<div class="form-group">
-							<div ng-repeat="item in model.items">
-								<div class="item-value">
+							<div ng-repeat="item in model.items" class="row" style="margin:10px;">
+								<div class="item-value col-lg-5">
 									{{item.display}}
 								</div>
 								<div>
-									<a style="color:white;" ui-sref="item-edit({poll_id:model.poll.ID,item_id:item.ID})">Edit</a>
-									<a style="color:white;" ng-click="deleteItem(model.poll.ID,item.ID)">Delete</a>
+									<button class="btn btn-default btn-rounded" ui-sref="item-edit({poll_id:model.poll.ID,item_id:item.ID})">Edit</button>
+									<button class="btn btn-warning btn-rounded" ng-click="deleteItem(model.poll.ID,item.ID)">Delete</button>
+									<!--<a style="color:white;" ui-sref="item-edit({poll_id:model.poll.ID,item_id:item.ID})">Edit</a>-->
+									<!--<a style="color:white;" ng-click="deleteItem(model.poll.ID,item.ID)">Delete</a>-->
 								</div>
 							</div>
 						</div>
 					</div>
 					<button  class="btn btn-primary btn-lg btn-rounded" ng-click="save(model.poll.ID,model.poll.user_id,model.poll.start,model.poll.end,model.poll.title)">Save Poll</button>
-					<button  class="btn btn-primary btn-lg btn-rounded" ui-sref="item-create({poll_id:model.poll.ID})">Add Item</button>
-					<button  class="btn btn-primary btn-lg btn-rounded">Cancel</button>
+					<button  class="btn btn-default btn-lg btn-rounded" ui-sref="item-create({poll_id:model.poll.ID})">Add Item</button>
+					<button  class="btn btn-default btn-lg btn-rounded">Cancel</button>
 				</div>
 			</div>
 		</div>

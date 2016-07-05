@@ -52,6 +52,8 @@
     "yargs": "^3.3.1"
   },
   "dependencies": {
-    "angular-bootstrap-datetimepicker": "^1.0.1"
+    "angular-bootstrap-datetimepicker": "^1.0.1",
+    "angular-chart.js": "^1.0.0-alpha8",
+    "chart.js": "^2.1.6"
   }
 }

@@ -3,9 +3,10 @@
 angular
   .module('yapp', [
     'ui.router',
-    'ngAnimate'
+    'ngAnimate',
+      'chart.js'
   ])
-    .run(function($rootScope,User){
+    .run(function($rootScope,User,$state){
         $rootScope.$on("$stateChangeStart", function (event, toState, toParams, fromState, fromParams) {
             if (toState.data.authenticate && !User.isAuthenticated()) {
                 // User isn’t authenticated

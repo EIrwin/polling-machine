@@ -11,7 +11,8 @@ angular.module('yapp')
             var model = {
                 pollId:$state.params.id,
                 poll:null,
-                items:[]
+                items:[],
+                user_id:User.getCurrent().ID
             };
 
             $scope.model = model;
@@ -29,7 +30,6 @@ angular.module('yapp')
             var userId = User.getCurrent().ID;
             Polls.updatePoll(id,user_id,start,end,title)
                 .then(function (poll) {
-                    $log.info(poll);
                     $state.go('user-home',{id:userId});
                 },function (error) {
                     $log.error(error);

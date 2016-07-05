@@ -12,7 +12,8 @@ angular.module('yapp')
 
         var model = {
             title:'',
-            end:'2014-04-15T18:00:15-07:00'
+            end:'2014-04-15T18:00:15-07:00',
+            user_id:User.getCurrent().ID
         };
 
         $scope.model = model;
