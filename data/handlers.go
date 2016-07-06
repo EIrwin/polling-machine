@@ -2,10 +2,8 @@ package data
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/eirwin/polling-machine/models"
 	"github.com/jinzhu/gorm"
-	"log"
 	"net/http"
 )
 
@@ -24,18 +22,12 @@ const (
 	ConnectionInfoPath = APIBase + "data" + Connection
 )
 
-type ConnectionInfo struct {
-	User     string
-	DB       string
-	Password string
-	Host     string
-	Port     string
-}
-
 func InitializeDatabaseHandler(w http.ResponseWriter, r *http.Request) {
 	conn := GetConnectionInfo()
 	db, _ := GetDatabase(conn)
-	initDB(db)
+	defer db.Close()
+
+	InitDB(db)
 }
 
 func InitializeDatabaseHealthCheckHandler(w http.ResponseWriter, r *http.Request) {
@@ -55,7 +47,7 @@ func InitializeDiscoverConnectionHandler(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-func initDB(db *gorm.DB) {
+func InitDB(db *gorm.DB) {
 	createUsersTable(db)
 	createPollsTable(db)
 	createItemsTable(db)
@@ -82,38 +74,3 @@ func createResponseTable(db *gorm.DB) {
 	db.CreateTable(&models.Response{})
 }
 
-func GetDatabase(connInfo ConnectionInfo) (*gorm.DB, error) {
-	conn := fmt.Sprintf(
-		"user=%s dbname=%s password=%s host=%s port=%s sslmode=disable",
-		connInfo.User,
-		connInfo.DB,
-		connInfo.Password,
-		connInfo.Host,
-		connInfo.Port,
-	)
-
-	db, err := gorm.Open("postgres", conn)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return db, nil
-}
-
-func GetConnectionInfo() ConnectionInfo {
-	return ConnectionInfo{
-		User:     "postgres",
-		DB:       "postgres",
-		Password: "mypass",
-		//Host:"172.17.0.2",
-		Host: "192.168.99.100",
-		Port: "5432",
-	}
-	//return ConnectionInfo{
-	//	User : "postgres",
-	//	DB : "postgres",
-	//	Password: "mypass",
-	//	Host:os.Getenv("POLLINGMACHINE_POSTGRES_1_PORT_5432_TCP_ADDR"),
-	//	Port:os.Getenv("POLLINGMACHINE_POSTGRES_1_PORT_5432_TCP_PORT"),
-	//}
-}

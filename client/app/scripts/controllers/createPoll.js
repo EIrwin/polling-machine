@@ -12,8 +12,9 @@ angular.module('yapp')
 
         var model = {
             title:'',
-            end:'2014-04-15T18:00:15-07:00',
-            user_id:User.getCurrent().ID
+            user_id:User.getCurrent().ID,
+            date:new Date(),
+            time:''
         };
 
         $scope.model = model;
@@ -22,8 +23,11 @@ angular.module('yapp')
 
         $scope.createPoll = function(title,end){
             var userId = User.getCurrent().ID;
-            console.log(userId);
-            Polls.createPoll(title,end,userId)
+
+
+            var exp = ISODateString($scope.model.date) + ISOTimeString($scope.model.time);
+
+            Polls.createPoll(title,exp,userId)
                 .then(function (poll) {
                     $state.go('user-home',{id:userId});
                 },function (error) {
@@ -33,5 +37,41 @@ angular.module('yapp')
 
         function logout(){
             Auth.logout();
+        }
+
+        $scope.inlineOptions = {
+            minDate: new Date(),
+            showWeeks: true
+        };
+
+        $scope.dateOptions = {
+            formatYear: 'yy',
+            maxDate: new Date(2020, 5, 22),
+            minDate: new Date(),
+            startingDay: 1
+        };
+
+        $scope.open1 = function() {
+            $scope.popup1.opened = true;
+        };
+
+        $scope.format = 'dd-MMMM-yyyy';
+
+        $scope.popup1 = {
+            opened: false
+        };
+
+        function ISODateString(d){
+            function pad(n){return n<10 ? '0'+n : n}
+            return d.getFullYear()+'-'
+                + pad(d.getMonth()+1)+'-'
+                + pad(d.getDate())+'T';
+        }
+
+        function ISOTimeString(d) {
+            function pad(n){return n<10 ? '0'+n : n}
+            return pad(d.getHours())+':'
+            + pad(d.getMinutes())+':'
+            + pad(d.getSeconds())+'Z';
         }
     });

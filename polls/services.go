@@ -14,6 +14,9 @@ import (
 	"github.com/pborman/uuid"
 )
 
+const (
+	CACHE_ENDPOINT = "192.168.99.100:6379"
+)
 type Service interface {
 	//polls
 	CreatePoll(user_id int, end time.Time, title string) (models.Poll, error)
@@ -120,8 +123,28 @@ func (s *service) CreateResponse(itemId, pollId int,token string) (models.Respon
 		log.Fatal(err)
 	}
 
+	//check cache for key
+	cache := cache.NewRedisCache(CACHE_ENDPOINT,10)
+	key := generateCacheKey(pollId,token)
+	value,err := cache.Get(key)
+
+	if err != nil || value.(bool) {
+		return response,err
+	}
+
+	//retrieve related poll
+	poll,err := s.polls.GetPoll(pollId)
+	if err != nil {
+		return  response,err
+	}
+
+	//calculate remaining TTL
+	exp := getExpiration(poll.End)
+
+	//update flag
+	cache.SetWithTTL(key,true,exp)
+
 	item := make(chan models.Item)
-	poll := make(chan models.Poll)
 	user := make(chan models.User)
 
 	//retrieve item async
@@ -130,29 +153,22 @@ func (s *service) CreateResponse(itemId, pollId int,token string) (models.Respon
 		c <- i
 	}(s,item,itemId)
 
-	//retrieve poll async
-	go func(s *service,c chan models.Poll,pollId int) {
-		p,_ := s.polls.GetPoll(pollId)
-		c <-p
-	}(s,poll,pollId)
 
 	//retrieve user
-	go func(s *service,c chan models.User,pollId int) {
-		poll,_ := s.polls.GetPoll(pollId)
-		u,_ := s.users.Get(int(poll.ID))
+	go func(s *service,c chan models.User,poll models.Poll) {
+		u,_ := s.users.Get(poll.UserID)
 		c <- u
-	}(s,user,pollId)
+	}(s,user,poll)
 
 	//can probably run this async
-	s.sendResponseNotification(item,poll,user)
+	s.sendResponseNotification(item,user,poll)
 
 	return response, nil
 }
 
-func (s *service) sendResponseNotification(i chan models.Item,p chan models.Poll,u chan models.User) {
+func (s *service) sendResponseNotification(i chan models.Item,u chan models.User,poll models.Poll) {
 
 	item := <- i
-	poll := <- p
 	user := <- u
 
 	//the following is only temporary
@@ -206,7 +222,7 @@ func (s *service) GetResponseToken(pollId int) (string,error)  {
 	key := generateCacheKey(pollId,token)
 
 	//store consumption flag with expiration
-	cache := cache.NewRedisCache("192.168.99.100:6379",10)
+	cache := cache.NewRedisCache(CACHE_ENDPOINT,10)
 	err = cache.SetWithTTL(key,false,exp)
 
 	if err != nil {
@@ -217,11 +233,8 @@ func (s *service) GetResponseToken(pollId int) (string,error)  {
 }
 
 func getExpiration(exp time.Time) (int) {
-	//log.Println(time.Now().Ad)
-	//log.Println(exp)
-	//log.Println(time.Since(exp).Hours())
-	//log.Println(exp.Sub(time.Now()))
-	return  100
+	log.Println(exp.Sub(time.Now()))
+	return  int(exp.Sub(time.Now()).Seconds());
 }
 
 func generateCacheKey(pollId int,token string)  string {

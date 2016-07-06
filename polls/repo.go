@@ -33,6 +33,8 @@ type pollRepo struct {
 func (repo *pollRepo) CreatePoll(user_id int, start, end time.Time,title string) (models.Poll, error) {
 	conn := data.GetConnectionInfo()
 	db, err := data.GetDatabase(conn)
+	defer db.Close()
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -54,6 +56,8 @@ func (repo *pollRepo) CreatePoll(user_id int, start, end time.Time,title string)
 func (repo *pollRepo) GetPoll(id int) (models.Poll, error) {
 	conn := data.GetConnectionInfo()
 	db, err := data.GetDatabase(conn)
+	defer db.Close()
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -68,6 +72,8 @@ func (repo *pollRepo) GetPoll(id int) (models.Poll, error) {
 func (repo *pollRepo) GetPollsByUser(user_id int) ([]models.Poll,error)  {
 	conn := data.GetConnectionInfo()
 	db,err := data.GetDatabase(conn)
+	defer db.Close()
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -81,6 +87,8 @@ func (repo *pollRepo) GetPollsByUser(user_id int) ([]models.Poll,error)  {
 func (repo *pollRepo) UpdatePoll(id, user_id int, start, end time.Time,title string) (models.Poll,error)  {
 	conn := data.GetConnectionInfo()
 	db,err := data.GetDatabase(conn)
+	defer db.Close()
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -101,6 +109,8 @@ func (repo *pollRepo) UpdatePoll(id, user_id int, start, end time.Time,title str
 func (repo *pollRepo) CreateItem(poll_id int, value, display string) (models.Item, error) {
 	conn := data.GetConnectionInfo()
 	db, err := data.GetDatabase(conn)
+	defer db.Close()
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -121,6 +131,8 @@ func (repo *pollRepo) CreateItem(poll_id int, value, display string) (models.Ite
 func (repo *pollRepo) GetPollItem(id int) (models.Item, error) {
 	conn := data.GetConnectionInfo()
 	db, err := data.GetDatabase(conn)
+	defer db.Close()
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -135,6 +147,8 @@ func (repo *pollRepo) GetPollItem(id int) (models.Item, error) {
 func (repo *pollRepo) GetPollItemsByPollID(poll_id int) ([]models.Item,error)  {
 	conn := data.GetConnectionInfo()
 	db, err := data.GetDatabase(conn)
+	defer db.Close()
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -149,6 +163,8 @@ func (repo *pollRepo) GetPollItemsByPollID(poll_id int) ([]models.Item,error)  {
 func (repo *pollRepo) UpdatePollItem(id,poll_id int,value,display string) (models.Item,error)  {
 	conn := data.GetConnectionInfo()
 	db, err := data.GetDatabase(conn)
+	defer db.Close()
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -167,6 +183,8 @@ func (repo *pollRepo) UpdatePollItem(id,poll_id int,value,display string) (model
 func (repo *pollRepo) DeleteItem(id int) (error)  {
 	conn := data.GetConnectionInfo()
 	db, err := data.GetDatabase(conn)
+	defer db.Close()
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -181,6 +199,8 @@ func (repo *pollRepo) DeleteItem(id int) (error)  {
 func (repo *pollRepo) CreateResponse(item_id,poll_id int) (models.Response, error) {
 	conn := data.GetConnectionInfo()
 	db, err := data.GetDatabase(conn)
+	defer  db.Close()
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -200,6 +220,8 @@ func (repo *pollRepo) CreateResponse(item_id,poll_id int) (models.Response, erro
 func (repo *pollRepo) GetResponseCounts(poll_id int) ([]models.ResponseCount,error)  {
 	conn := data.GetConnectionInfo()
 	db, err := data.GetDatabase(conn)
+	defer db.Close()
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -238,8 +260,6 @@ func (repo *pollRepo) GetResponseCounts(poll_id int) ([]models.ResponseCount,err
 			Count:counts[key],
 		}
 	}
-
-	//log.Println(responseCounts)
 
 	return responseCounts, nil
 }

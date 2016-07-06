@@ -5,7 +5,7 @@ angular
     'ui.router',
     'chart.js',
       'ui.bootstrap',
-      'ui.bootstrap.progressbar'
+      'ui.bootstrap.datepicker'
   ])
     .run(function($rootScope,User,$state){
         $rootScope.$on("$stateChangeStart", function (event, toState, toParams, fromState, fromParams) {

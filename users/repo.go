@@ -22,6 +22,8 @@ type userRepository struct {
 func (u *userRepository) Create(email, password string) (models.User, error) {
 	connInfo := data.GetConnectionInfo()
 	db, err := data.GetDatabase(connInfo)
+	defer db.Close()
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -54,6 +56,8 @@ func (u *userRepository) Create(email, password string) (models.User, error) {
 func (u *userRepository) Get(id int) (models.User, error) {
 	connInfo := data.GetConnectionInfo()
 	db, err := data.GetDatabase(connInfo)
+	defer db.Close()
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -75,6 +79,8 @@ func (u *userRepository) Get(id int) (models.User, error) {
 func (u *userRepository) Find(params map[string]interface{}) ([]models.User,error)  {
 	connInfo := data.GetConnectionInfo()
 	db, err := data.GetDatabase(connInfo)
+	defer db.Close()
+
 	if err != nil {
 		log.Print("here")
 		log.Fatal(err)

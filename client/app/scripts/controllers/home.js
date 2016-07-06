@@ -1,8 +1,7 @@
 'use strict';
 
 angular.module('yapp')
-  .controller('HomeCtrl', function($scope, $state,$stateParams,Users,$log,Polls,Auth) {
-
+  .controller('HomeCtrl', function($scope, $state,$stateParams,Users,$log,Polls,Auth,$location) {
 
       activate();
       

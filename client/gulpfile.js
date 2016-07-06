@@ -158,19 +158,25 @@ gulp.task('build', ['clean'], function() {
 
 gulp.task('development-task', function () {
   gulp.src('development.json')
-  .pipe(gulpNgConfig('yapp'))
+  .pipe(gulpNgConfig('yapp',{
+    createModule:false
+  }))
   .pipe(gulp.dest('./app/scripts/'))
 });
 
 gulp.task('staging-task', function () {
   gulp.src('staging.json')
-  .pipe(gulpNgConfig('yapp'))
+  .pipe(gulpNgConfig('yapp',{
+    createModule:false
+  }))
   .pipe(gulp.dest('./app/scripts/'))
 });
 
 gulp.task('release-task', function () {
   gulp.src('release.json')
-  .pipe(gulpNgConfig('yapp'))
+  .pipe(gulpNgConfig('yapp',{
+    createModule:false
+  }))
   .pipe(gulp.dest('./app/scripts/'))
 });
 

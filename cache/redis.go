@@ -5,7 +5,7 @@ import (
 )
 
 type Cache interface {
-	Get(key string, value interface{}) (interface{},error)
+	Get(key string) (interface{},error)
 	Set(key string, value interface{}) error
 	SetWithTTL(key string, value interface{}, ttl int) error
 }
@@ -14,7 +14,7 @@ type redisCache struct {
 	pool redis.Pool
 }
 
-func (r *redisCache) Get(key string, value interface{}) (interface{},error) {
+func (r *redisCache) Get(key string) (interface{},error) {
 	c := r.pool.Get()
 	defer c.Close()
 

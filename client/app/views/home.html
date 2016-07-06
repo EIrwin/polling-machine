@@ -27,6 +27,9 @@
                 <div class="col-sm-1">
                     <a ui-sref="poll-edit({id:poll.ID})">Edit</a>
                 </div>
+                <div class="col-sm-1">
+                    <a uib-popover="I am activated manually" popover-is-open="popoverIsOpen" ng-click="popoverIsOpen = !popoverIsOpen" >Share</a>
+                </div>
             </div>
         </div>
     </div>

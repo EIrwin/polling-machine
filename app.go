@@ -4,22 +4,27 @@ import (
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
-	//"github.com/thoas/stats"
+	"github.com/thoas/stats"
 	"github.com/eirwin/polling-machine/data"
 	"github.com/eirwin/polling-machine/polls"
 	"github.com/eirwin/polling-machine/users"
 
 	"github.com/eirwin/polling-machine/auth"
+	"github.com/eirwin/polling-machine/models"
+	"log"
 )
 
 func main() {
+
+	//initialize database if needed
+	initDatabase()
 
 	n := negroni.New(
 		negroni.NewRecovery(),
 		negroni.NewLogger(),
 	)
 
-	//statsMiddleware := stats.New()
+	statsMiddleware := stats.New()
 
 	// create the router
 	router := mux.NewRouter()
@@ -83,7 +88,27 @@ func main() {
 		AllowedMethods: []string{"GET","POST","PUT","DELETE","OPTIONS"},
 	}))
 	n.UseHandler(router)
-
+	n.Use(statsMiddleware)
 	n.Run(":8181")
 
+}
+
+//the following is just for testing purposes
+//to check if we have all the tables we need
+func initDatabase()  {
+
+	conn := data.GetConnectionInfo()
+	db,_ := data.GetDatabase(conn)
+	defer db.Close()
+
+	init := false
+	init = !(db.HasTable(models.User{}) &&
+	       db.HasTable(models.Poll{}) &&
+	       db.HasTable(models.Item{}) &&
+	       db.HasTable(models.Response{}))
+
+	if init {
+		log.Println("Initializing database...")
+		data.InitDB(db)
+	}
 }
