@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	//CACHE_ENDPOINT = "192.168.99.100:6379"
-	CACHE_ENDPOINT = "redis"
+	CACHE_ENDPOINT = "192.168.99.100:6379"
+	//CACHE_ENDPOINT = "redis"
 )
 
 type Service interface {
