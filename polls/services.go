@@ -15,7 +15,8 @@ import (
 )
 
 const (
-	CACHE_ENDPOINT = "POLLINGMACHINE_REDIS_1"
+	//CACHE_ENDPOINT = "192.168.99.100:6379"
+	CACHE_ENDPOINT = "redis"
 )
 
 type Service interface {
