@@ -22,6 +22,7 @@ const (
 	PollItemById = APIBase + "polls" + ByID + "/items" + ByPollItemID
 	PollResponse = APIBase + "polls" + ByID + "/responses"
 	ResponseCount = APIBase + "polls" + ByID + "/count"
+	ResponseToken = APIBase + "polls" + ByID + "/token"
 )
 
 func CreatePollHandler(w http.ResponseWriter, r *http.Request) {
@@ -272,6 +273,30 @@ func GetResponseCountsHandler(w http.ResponseWriter, r *http.Request) {
 	service := NewService()
 
 	counts, err := service.GetResponseCounts(id)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(counts); err != nil {
+		panic(err)
+	}
+}
+
+func GetResponseTokenHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id,err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Fatal("invalid poll id format")
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	service := NewService()
+
+	counts, err := service.GetResponseToken(id)
+
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)

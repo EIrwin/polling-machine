@@ -24,6 +24,7 @@ postgres:
 go:
     build: .
     links:
+        - redis:redis
         - postgres:db # [other container]:[alias in this container]
         # this will create environment variables in the go container
         # with ip and port info for the postgres container
@@ -45,4 +46,9 @@ proxy:
           # creates environment variables in proxy container
           # with ip and port info for go container
           # also creates entries in /etc/hosts with ip info
+
+redis:
+    image: redis:latest
+    ports:
+        - "6379:6379"
 

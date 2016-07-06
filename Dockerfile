@@ -9,6 +9,7 @@ RUN go get github.com/gorilla/mux
 RUN go get github.com/thoas/stats
 RUN go get github.com/codegangsta/negroni
 RUN go get github.com/jinzhu/gorm
+RUN go get github.com/garyburd/redigo/redis
 RUN go get github.com/eirwin/polling-machine/models
 RUN go get github.com/eirwin/polling-machine/users
 RUN go get github.com/eirwin/polling-machine/polls

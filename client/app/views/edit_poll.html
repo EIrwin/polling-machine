@@ -22,6 +22,7 @@
 						<div class="form-group">
 							<input type="text" placeholder="Enter your title here" name="title" class="form-control input-underline input-lg" ng-model="model.poll.title">
 							<input type="text" placeholder="Enter when you want your poll to end" class="form-control input-underline input-lg" ng-model="model.poll.end">
+							<datetimepicker data-ng-model="data.date"></datetimepicker>
 						</div>
 						<div class="form-group">
 							<div ng-repeat="item in model.items" class="row" style="margin:10px;">

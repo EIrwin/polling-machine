@@ -65,6 +65,10 @@ func main() {
 
 	// router handler for response counts
 	router.HandleFunc(polls.ResponseCount,polls.GetResponseCountsHandler).Methods("GET")
+
+	// router handler for generating response tokens
+	router.HandleFunc(polls.ResponseToken,polls.GetResponseTokenHandler).Methods("GET")
+
 	// router handler for initializing database
 	router.HandleFunc(data.InitDataPath, data.InitializeDatabaseHandler).Methods("GET")
 
@@ -73,7 +77,6 @@ func main() {
 
 	// router handler for database connection info
 	router.HandleFunc(data.ConnectionInfoPath, data.InitializeDiscoverConnectionHandler).Methods("GET")
-
 
 	//n.Use(statsMiddleware)
 	n.Use(cors.New(cors.Options{
