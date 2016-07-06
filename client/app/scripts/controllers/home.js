@@ -14,8 +14,6 @@ angular.module('yapp')
           }
 
           $scope.model = model;
-          $scope.edit = edit;
-          $scope.disable = disable;
           $scope.logout = logout;
 
           Users.getUserById(model.userId)
@@ -30,14 +28,6 @@ angular.module('yapp')
               },function(error){
                   $log.error(error);
               })
-      }
-
-      function edit(id) {
-        $state.go('poll-edit',{id:id});
-      }
-
-      function disable(id) {
-        //TODO: Delete Polls
       }
       
       function logout() {

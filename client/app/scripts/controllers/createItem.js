@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yapp')
-    .controller('CreateItemCtrl', function($scope,$log,APIHelper,$state,User,Items) {
+    .controller('CreateItemCtrl', function($scope,$log,APIHelper,$state,User,Items,Auth) {
 
         activate();
 
@@ -10,10 +10,13 @@ angular.module('yapp')
             var model = {
                 value:'',
                 display:'',
-                poll_id:$state.params.poll_id
+                poll_id:$state.params.poll_id,
+                user_id:User.getCurrent().ID
             }
 
             $scope.model = model;
+
+            $scope.logout = logout;
 
             $scope.create = create;
         }
@@ -27,5 +30,9 @@ angular.module('yapp')
                 },function(error){
                     $log.error(error);
                 })
+        }
+        
+        function logout() {
+            Auth.logout()
         }
     });

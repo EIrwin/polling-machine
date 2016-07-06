@@ -1,27 +1,44 @@
 'use strict';
 
 angular.module('yapp')
-  .controller('ShareCtrl', function($scope,Meetings,$log,APIHelper,$state,$stateParams,Polls,Items,Responses) {
+  .controller('ShareCtrl', function($scope,Meetings,$log,APIHelper,$state,$stateParams,Polls,Items,Responses,$localstorage) {
 
       activate();
 
       function activate() {
+
           var model = {
               poll_id:$stateParams.id,
               poll:null,
               items:[],
               item_id:null,
-              submitted:false
+              submitted:false,
+              token:null,
+              hasToken:false
           }
 
           $scope.model = model;
 
           $scope.submitAnswer = submitAnswer;
 
-          loadPoll(model.poll_id);
+          var hasToken = Responses.hasResponseToken(model.poll_id);
 
-          loadItems(model.poll_id);
+          if(hasToken){
+              $scope.model.hasToken = true;
+
+          }else{
+              Responses.getResponseToken(model.poll_id)
+                  .then(function(token){
+                      $scope.model.token = token;
+                      loadPoll(model.poll_id);
+                      loadItems(model.poll_id);
+                  },function(error){
+                      $log.error(error);
+                  })
+          }
       }
+      
+
 
       function loadPoll(id) {
         Polls.getPollById(id)
@@ -48,7 +65,9 @@ angular.module('yapp')
               .then(function(resp){
                   //show success message
                   $scope.model.submitted = true;
-                  //store confirmation token for or something locally
+
+                  //store token to prevent more submisions
+                  Responses.setResponseToken(poll_id,$scope.model.token);
               },function (error) {
                   $log.error(error);
               })

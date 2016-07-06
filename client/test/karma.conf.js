@@ -19,6 +19,9 @@ module.exports = function(config) {
       '../bower_components/angular-mocks/angular-mocks.js',
       '../bower_components/ui-router/release/angular-ui-router.js',
       '../bower_components/angular-animate/angular-animate.js',
+      '../bower_components/d3/d3.js',
+      '../bower_components/c3/c3.js',
+      '../bower_components/angular-chart/angular-chart.js',
       // endbower
       '../app/scripts/**/*.js',
       //'../test/mock/**/*.js',

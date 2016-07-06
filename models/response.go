@@ -8,7 +8,7 @@ type Response struct {
 	gorm.Model
 	ItemID    int `json:"item_id"`
 	PollID	  int `json:"poll_id,string"`
-	IpAddress string `json:ip_address"`
+	Token	  string `json:"token" gorm:"-"`
 }
 
 type ResponseCount struct {

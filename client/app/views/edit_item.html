@@ -1,21 +1,55 @@
-<!--
-Inspired by http://dribbble.com/shots/917819-iPad-Calendar-Login?list=shots&sort=views&timeframe=ever&offset=461
--->
-<div class="login-page">
-	<div class="row">
-		<div class="col-lg-4 col-md-offset-4 col-lg-offset-4">
-        	<img src="images/flat-avatar.png" class="user-avatar" />
-			<h1>Edit Item</small></h1>
+<div class="dashboard-page">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-sm-3 col-md-2 sidebar">
+
+				<div class="text-center">
+					<h2 class="brand">Polling <small>Machine</small></h2>
+					<img src="images/flat-avatar.png" class="user-avatar" /><br />
+					<a ng-click="logout()" class="btn btn-white btn-outline btn-rounded btn-sm">Logout</a>
+				</div>
+
+				<ul class="nav nav-sidebar">
+					<li><a ui-sref="user-home({id:model.user_id})">Home</a> </li>
+					<li><a ui-sref="polls-create">Create New Poll</a></li>
+				</ul>
+
+			</div>
+			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" ui-view>
+				<h1>Edit Item</small></h1>
+				<div>
+					<div class="form-content">
+						<div class="form-group">
+							<input type="text" placeholder="Enter the value here" name="title" class="form-control input-underline input-lg" ng-model="model.item.value">
+						</div>
+						<div class="form-group">
+							<input type="text" placeholder="Enter the display here" class="form-control input-underline input-lg" ng-model="model.item.display">
+						</div>
+					</div>
+					<button  class="btn btn-white btn-outline btn-lg btn-rounded" ng-click="save(model.item.value,model.item.display)">Save Item</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--<div class="login-page">-->
+	<!--<div class="row">-->
+		<!--<div class="col-lg-4 col-md-offset-4 col-lg-offset-4">-->
+        	<!--<img src="images/flat-avatar.png" class="user-avatar" />-->
+			<!--<h1>Edit Item</small></h1>-->
 			<div>
 				<div class="form-content">
 					<div class="form-group">
 						<input type="text" placeholder="Enter the value here" name="title" class="form-control input-underline input-lg" ng-model="model.item.value">
+					</div>
+					<div class="form-group">
 						<input type="text" placeholder="Enter the display here" class="form-control input-underline input-lg" ng-model="model.item.display">
 					</div>
 				</div>
 				<button  class="btn btn-white btn-outline btn-lg btn-rounded" ng-click="save(model.item.value,model.item.display)">Save Item</button>
 				<button  class="btn btn-white btn-outline btn-lg btn-rounded">Cancel</button>
 			</div>
-		</div>
-	</div>
-</div>
+		<!--</div>-->
+	<!--</div>-->
+<!--</div>-->

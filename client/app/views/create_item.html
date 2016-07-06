@@ -10,6 +10,7 @@
 				</div>
 
 				<ul class="nav nav-sidebar">
+					<li><a ui-sref="user-home({id:model.user_id})">Home</a> </li>
 					<li><a ui-sref="polls-create">Create New Poll</a></li>
 				</ul>
 
@@ -20,11 +21,12 @@
 					<div class="form-content">
 						<div class="form-group">
 							<input type="text" placeholder="Enter the value here" name="title" class="form-control input-underline input-lg" ng-model="model.value">
+						</div>
+						<div class="form-group">
 							<input type="text" placeholder="Enter the display here" class="form-control input-underline input-lg" ng-model="model.display">
 						</div>
 					</div>
 					<button  class="btn btn-primary btn-lg btn-rounded" ng-click="create(model.value,model.display)">Create Item</button>
-					<button  class="btn btn-primary btn-lg btn-rounded">Cancel</button>
 				</div>
 			</div>
 		</div>

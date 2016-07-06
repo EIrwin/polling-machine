@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yapp')
-    .controller('EditItemCtrl', function($scope,$log,APIHelper,$state,User,Items) {
+    .controller('EditItemCtrl', function($scope,$log,APIHelper,$state,User,Items,Auth) {
 
         activate();
 
@@ -10,12 +10,15 @@ angular.module('yapp')
             var model = {
                 poll_id:$state.params.poll_id,
                 item_id:$state.params.item_id,
-                item:null
+                item:null,
+                user_id:User.getCurrent().ID
             }
 
             $scope.model = model;
 
             $scope.save = save;
+
+            $scope.logout = logout;
 
             loadItem(model.poll_id,model.item_id);
         }
@@ -38,5 +41,9 @@ angular.module('yapp')
                 },function(error){
                     $log.error(error);
                 })
+        }
+        
+        function logout() {
+            Auth.logout();
         }
     });

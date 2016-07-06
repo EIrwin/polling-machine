@@ -51,6 +51,7 @@ func (r *Request) SendEmail() (bool, error) {
 	if err := smtp.SendMail(addr, auth,r.from, r.to, msg); err != nil {
 		return false, err
 	}
+
 	return true, nil
 }
 
@@ -66,7 +67,6 @@ func (r *Request) ParseTemplate(templatePath string, data interface{}) error {
 		return err
 	}
 	r.body = buf.String()
-	log.Println(r.body)
 	return nil
 
 }

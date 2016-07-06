@@ -29,7 +29,7 @@ type Service interface {
 	DeleteItem(id int) error
 
 	//poll responses
-	CreateResponse(item_id, poll_id int, ip_address string) (models.Response, error)
+	CreateResponse(item_id, poll_id int,token string) (models.Response, error)
 	GetResponseCounts(poll_id int) ([]models.ResponseCount, error)
 
 	//keys
@@ -114,26 +114,46 @@ func (s *service) DeleteItem(id int) error {
 	return nil
 }
 
-func (s *service) CreateResponse(item_id, poll_id int, ip_address string) (models.Response, error) {
-	response, err := s.polls.CreateResponse(item_id, poll_id, ip_address)
+func (s *service) CreateResponse(itemId, pollId int,token string) (models.Response, error) {
+	response, err := s.polls.CreateResponse(itemId, pollId)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	//go func() {
-	//	//I want to invoke SendResponseNotification here
-	//	//I want to do sendResponseNotification(item_id,poll_id)
-	//}()
+	item := make(chan models.Item)
+	poll := make(chan models.Poll)
+	user := make(chan models.User)
+
+	//retrieve item async
+	go func(s *service,c chan models.Item,itemId int) {
+		i,_ := s.GetPollItem(itemId)
+		c <- i
+	}(s,item,itemId)
+
+	//retrieve poll async
+	go func(s *service,c chan models.Poll,pollId int) {
+		p,_ := s.polls.GetPoll(pollId)
+		c <-p
+	}(s,poll,pollId)
+
+	//retrieve user
+	go func(s *service,c chan models.User,pollId int) {
+		poll,_ := s.polls.GetPoll(pollId)
+		u,_ := s.users.Get(int(poll.ID))
+		c <- u
+	}(s,user,pollId)
+
+	//can probably run this async
+	s.sendResponseNotification(item,poll,user)
 
 	return response, nil
 }
 
-func (s *service) sendResponseNotification(item_id, poll_id int) {
+func (s *service) sendResponseNotification(i chan models.Item,p chan models.Poll,u chan models.User) {
 
-	//retrieve poll and selected item
-	item, _ := s.polls.GetPollItem(item_id)
-	poll, _ := s.polls.GetPoll(poll_id)
-	user, _ := s.users.Get(poll.UserID)
+	item := <- i
+	poll := <- p
+	user := <- u
 
 	//the following is only temporary
 	templateData := struct {

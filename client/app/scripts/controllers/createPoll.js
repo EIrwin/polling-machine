@@ -8,7 +8,7 @@
  * Controller of yapp
  */
 angular.module('yapp')
-    .controller('CreatePollCtrl', function($scope,Users,$log,APIHelper,$state,User,Polls) {
+    .controller('CreatePollCtrl', function($scope,Users,$log,APIHelper,$state,User,Polls,Auth) {
 
         var model = {
             title:'',
@@ -17,6 +17,8 @@ angular.module('yapp')
         };
 
         $scope.model = model;
+
+        $scope.logout = logout;
 
         $scope.createPoll = function(title,end){
             var userId = User.getCurrent().ID;
@@ -27,5 +29,9 @@ angular.module('yapp')
                 },function (error) {
                     $log.error(error);
                 })
+        }
+
+        function logout(){
+            Auth.logout();
         }
     });

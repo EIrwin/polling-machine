@@ -21,11 +21,12 @@
 					<div class="form-content">
 						<div class="form-group">
 							<input type="text" placeholder="Enter your title here" name="title" class="form-control input-underline input-lg" ng-model="model.title">
+						</div>
+						<div class="form-group">
 							<input type="text" placeholder="Enter when you want your poll to end" class="form-control input-underline input-lg" ng-model="model.end">
 						</div>
 					</div>
 					<button  class="btn btn-primary btn-lg btn-rounded" ng-click="createPoll(model.title,model.end)">Create Poll</button>
-					<button  class="btn btn-default btn-lg btn-rounded">Cancel</button>
 				</div>
 			</div>
 		</div>

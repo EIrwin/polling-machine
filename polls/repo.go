@@ -23,7 +23,7 @@ type Repo interface {
 	DeleteItem(id int) (error)
 
 	//poll responses
-	CreateResponse(item_id,poll_id int, ip_address string) (models.Response, error)
+	CreateResponse(item_id,poll_id int) (models.Response, error)
 	GetResponseCounts(poll_id int) ([]models.ResponseCount,error)
 }
 
@@ -178,7 +178,7 @@ func (repo *pollRepo) DeleteItem(id int) (error)  {
 	return nil
 }
 
-func (repo *pollRepo) CreateResponse(item_id,poll_id int, ip_address string) (models.Response, error) {
+func (repo *pollRepo) CreateResponse(item_id,poll_id int) (models.Response, error) {
 	conn := data.GetConnectionInfo()
 	db, err := data.GetDatabase(conn)
 	if err != nil {
@@ -188,7 +188,6 @@ func (repo *pollRepo) CreateResponse(item_id,poll_id int, ip_address string) (mo
 	response := models.Response{
 		ItemID:item_id,
 		PollID:poll_id,
-		IpAddress:ip_address,
 	}
 
 	db.NewRecord(response)

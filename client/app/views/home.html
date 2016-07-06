@@ -22,13 +22,10 @@
                 <div class="col-sm-3">{{poll.title}}</div>
                 <div class="col-sm-3">{{poll.end}}</div>
                 <div class="col-sm-1">
-                    <a href="#" ui-sref="results({id:poll.ID})">Results</a>
+                    <a ui-sref="results({id:poll.ID})">Results</a>
                 </div>
                 <div class="col-sm-1">
-                    <a href="#" ng-click="edit(poll.ID)">Edit</a>
-                </div>
-                <div class="col-sm-1">
-                    <a href="#" ng-click="disable(poll.ID)">Disable</a>
+                    <a ui-sref="poll-edit({id:poll.ID})">Edit</a>
                 </div>
             </div>
         </div>

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yapp')
-    .controller('ResultsCtrl', function($scope,$log,APIHelper,$state,User,Polls,Responses) {
+    .controller('ResultsCtrl', function($scope,$log,APIHelper,$state,User,Polls,Responses,Auth) {
 
         activate();
 
@@ -19,6 +19,7 @@ angular.module('yapp')
 
             $scope.model = model;
 
+            $scope.logout = logout;
 
             loadPoll(model.pollId);
 
@@ -47,5 +48,9 @@ angular.module('yapp')
                 },function(error){
                     $log.error(error);
                 })
+        }
+
+        function logout(){
+            Auth.logout();
         }
     });

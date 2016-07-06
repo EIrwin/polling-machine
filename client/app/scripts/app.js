@@ -3,9 +3,7 @@
 angular
   .module('yapp', [
     'ui.router',
-    'ngAnimate',
-    'chart.js',
-      'ui.bootstrap.datetimepicker'
+    'chart.js'
   ])
     .run(function($rootScope,User,$state){
         $rootScope.$on("$stateChangeStart", function (event, toState, toParams, fromState, fromParams) {
