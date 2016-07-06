@@ -18,8 +18,11 @@ Inspired by http://dribbble.com/shots/917819-iPad-Calendar-Login?list=shots&sort
 						{{item.display}}
 					</label>
 				</div>
-				<button  class="btn btn-white btn-outline btn-lg btn-rounded" ng-click="submitAnswer(model.item_id,model.poll_id)">Submit</button>
+				<button  ng-if="!model.submitted" class="btn btn-white btn-outline btn-lg btn-rounded" ng-click="submitAnswer(model.item_id,model.poll_id)">Submit</button>
 			</div>
+		</div>
+		<div class="row" ng-if="model.loading">
+			<img src="../images/ripple.svg"/>
 		</div>
 	</div>
 	<div ng-if="model.hasToken">

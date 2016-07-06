@@ -60,15 +60,17 @@ angular.module('yapp')
       
       function submitAnswer(item_id,poll_id) {
           //do local check for slug for dupe check
-          
+          $scope.model.loading = true;
+          $scope.model.submitted = true;
           Responses.createResponse(item_id,poll_id)
               .then(function(resp){
                   //show success message
-                  $scope.model.submitted = true;
+                  $scope.model.loading = false;
 
                   //store token to prevent more submisions
                   Responses.setResponseToken(poll_id,$scope.model.token);
               },function (error) {
+                  $scope.model.loading = false;
                   $log.error(error);
               })
       }

@@ -3,7 +3,9 @@
 angular
   .module('yapp', [
     'ui.router',
-    'chart.js'
+    'chart.js',
+      'ui.bootstrap',
+      'ui.bootstrap.progressbar'
   ])
     .run(function($rootScope,User,$state){
         $rootScope.$on("$stateChangeStart", function (event, toState, toParams, fromState, fromParams) {
