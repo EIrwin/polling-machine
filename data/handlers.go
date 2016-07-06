@@ -73,4 +73,3 @@ func createResponseTable(db *gorm.DB) {
 	db.DropTableIfExists(&models.Response{})
 	db.CreateTable(&models.Response{})
 }
-

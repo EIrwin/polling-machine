@@ -1,3 +1,6 @@
 {
-  "ENV": {"name": "development", "apiEndpoint": "http://192.168.99.100:8181/api/v1"}
+  "ENV": {
+    "name": "development",
+    "apiEndpoint": "http://192.168.99.100/pm/api/v1"
+  }
 }

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yapp')
-  .controller('ShareCtrl', function($scope,Meetings,$log,APIHelper,$state,$stateParams,Polls,Items,Responses,$localstorage) {
+  .controller('ShareCtrl', function($scope,Meetings,$log,APIHelper,$state,$stateParams,Polls,Items,Responses) {
 
       activate();
 

@@ -1,28 +1,28 @@
 package auth
 
 import (
-	"net/http"
 	"encoding/json"
+	"net/http"
 )
 
 const (
 	// APIBase is the base path for API access
 	APIBase = "/api/v1/"
 
-	LoginPath  = APIBase + "login"
+	LoginPath = APIBase + "login"
 )
 
-type loginRequest struct  {
-	Email string	`json:"email"`
-	Password string	`json:"password"`
+type loginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 type loginResponse struct {
-	Token string	`json"token"`
+	Token string `json"token"`
 }
 
-func LoginHandler(w http.ResponseWriter,r * http.Request)  {
-	var req loginRequest;
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	var req loginRequest
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&req); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -30,7 +30,7 @@ func LoginHandler(w http.ResponseWriter,r * http.Request)  {
 
 	service := NewService()
 
-	token,err := service.Login(req.Email,req.Password)
+	token, err := service.Login(req.Email, req.Password)
 	if err != nil {
 		//w.WriteHeader(http.StatusInternalServerError)
 	}

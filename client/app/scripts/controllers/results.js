@@ -52,5 +52,6 @@ angular.module('yapp')
 
         function logout(){
             Auth.logout();
+            $state.go('login');
         }
     });

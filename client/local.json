@@ -1,0 +1,6 @@
+{
+  "ENV": {
+    "name": "local",
+    "apiEndpoint": "http://localhost:8181/api/v1"
+  }
+}

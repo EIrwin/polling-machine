@@ -156,6 +156,14 @@ gulp.task('build', ['clean'], function() {
   gulp.start('builddist');
 });
 
+gulp.task('local-task', function () {
+  gulp.src('local.json')
+      .pipe(gulpNgConfig('yapp',{
+        createModule:false
+      }))
+      .pipe(gulp.dest('./app/scripts/'))
+});
+
 gulp.task('development-task', function () {
   gulp.src('development.json')
   .pipe(gulpNgConfig('yapp',{
@@ -180,6 +188,7 @@ gulp.task('release-task', function () {
   .pipe(gulp.dest('./app/scripts/'))
 });
 
+gulp.task('local',['local-task','serve']);
 gulp.task('development',['development-task','serve']);
 gulp.task('staging',['staging-task','serve']);
 gulp.task('release',['release-task','serve']);

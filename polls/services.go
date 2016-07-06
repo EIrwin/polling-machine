@@ -5,18 +5,19 @@ import (
 	"github.com/eirwin/polling-machine/models"
 	"github.com/eirwin/polling-machine/users"
 
+	"fmt"
+	"github.com/eirwin/polling-machine/cache"
+	"github.com/pborman/uuid"
 	"log"
 	"os"
 	"path/filepath"
 	"time"
-	"github.com/eirwin/polling-machine/cache"
-	"fmt"
-	"github.com/pborman/uuid"
 )
 
 const (
 	CACHE_ENDPOINT = "192.168.99.100:6379"
 )
+
 type Service interface {
 	//polls
 	CreatePoll(user_id int, end time.Time, title string) (models.Poll, error)
@@ -32,11 +33,11 @@ type Service interface {
 	DeleteItem(id int) error
 
 	//poll responses
-	CreateResponse(item_id, poll_id int,token string) (models.Response, error)
+	CreateResponse(item_id, poll_id int, token string) (models.Response, error)
 	GetResponseCounts(poll_id int) ([]models.ResponseCount, error)
 
 	//keys
-	GetResponseToken(pollId int) (string,error)
+	GetResponseToken(pollId int) (string, error)
 }
 
 type service struct {
@@ -117,59 +118,62 @@ func (s *service) DeleteItem(id int) error {
 	return nil
 }
 
-func (s *service) CreateResponse(itemId, pollId int,token string) (models.Response, error) {
+func (s *service) CreateResponse(itemId, pollId int, token string) (models.Response, error) {
 	response, err := s.polls.CreateResponse(itemId, pollId)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	//check cache for key
-	cache := cache.NewRedisCache(CACHE_ENDPOINT,10)
-	key := generateCacheKey(pollId,token)
-	value,err := cache.Get(key)
+	cache := cache.NewRedisCache(CACHE_ENDPOINT, 10)
+	key := generateCacheKey(pollId, token)
+	value, err := cache.Get(key)
 
 	if err != nil || value.(bool) {
-		return response,err
+		return response, err
 	}
 
 	//retrieve related poll
-	poll,err := s.polls.GetPoll(pollId)
+	poll, err := s.polls.GetPoll(pollId)
 	if err != nil {
-		return  response,err
+		return response, err
 	}
+
+	//do check on expiration just to be sure
+	since := time.Since(poll.End)
+	log.Println(since)
 
 	//calculate remaining TTL
 	exp := getExpiration(poll.End)
 
 	//update flag
-	cache.SetWithTTL(key,true,exp)
+	cache.SetWithTTL(key, true, exp)
 
 	item := make(chan models.Item)
 	user := make(chan models.User)
 
 	//retrieve item async
-	go func(s *service,c chan models.Item,itemId int) {
-		i,_ := s.GetPollItem(itemId)
+	go func(s *service, c chan models.Item, itemId int) {
+		i, _ := s.GetPollItem(itemId)
 		c <- i
-	}(s,item,itemId)
-
+	}(s, item, itemId)
 
 	//retrieve user
-	go func(s *service,c chan models.User,poll models.Poll) {
-		u,_ := s.users.Get(poll.UserID)
+	go func(s *service, c chan models.User, poll models.Poll) {
+		u, _ := s.users.Get(poll.UserID)
 		c <- u
-	}(s,user,poll)
+	}(s, user, poll)
 
 	//can probably run this async
-	s.sendResponseNotification(item,user,poll)
+	s.sendResponseNotification(item, user, poll)
 
 	return response, nil
 }
 
-func (s *service) sendResponseNotification(i chan models.Item,u chan models.User,poll models.Poll) {
+func (s *service) sendResponseNotification(i chan models.Item, u chan models.User, poll models.Poll) {
 
-	item := <- i
-	user := <- u
+	item := <-i
+	user := <-u
 
 	//the following is only temporary
 	templateData := struct {
@@ -203,13 +207,13 @@ func (s *service) GetResponseCounts(poll_id int) ([]models.ResponseCount, error)
 	return counts, nil
 }
 
-func (s *service) GetResponseToken(pollId int) (string,error)  {
+func (s *service) GetResponseToken(pollId int) (string, error) {
 
 	var token string
 
-	poll,err := s.polls.GetPoll(pollId)
+	poll, err := s.polls.GetPoll(pollId)
 	if err != nil {
-		return token,err
+		return token, err
 	}
 
 	//calculate TTL for key
@@ -219,28 +223,29 @@ func (s *service) GetResponseToken(pollId int) (string,error)  {
 	token = uuid.NewUUID().String()
 
 	//generate composite cache key
-	key := generateCacheKey(pollId,token)
+	key := generateCacheKey(pollId, token)
 
 	//store consumption flag with expiration
-	cache := cache.NewRedisCache(CACHE_ENDPOINT,10)
-	err = cache.SetWithTTL(key,false,exp)
+	cache := cache.NewRedisCache(CACHE_ENDPOINT, 10)
+	err = cache.SetWithTTL(key, false, exp)
 
 	if err != nil {
-		return token,err
+		return token, err
 	}
 
-	return  token,nil
+	return token, nil
 }
 
-func getExpiration(exp time.Time) (int) {
-	log.Println(exp.Sub(time.Now()))
-	return  int(exp.Sub(time.Now()).Seconds());
+func getExpiration(exp time.Time) int {
+	log.Printf("exp=%v,now=%v,exp-now=%v",exp,time.Now(),exp.Sub(time.Now()).Seconds())
+	log.Printf("exp=%v,now=%v,since=%v",exp,time.Now(),time.Since(exp))
+
+	return int(time.Since(exp).Seconds())
 }
 
-func generateCacheKey(pollId int,token string)  string {
-	return  fmt.Sprintf("response%v-%v",pollId,token)
+func generateCacheKey(pollId int, token string) string {
+	return fmt.Sprintf("response%v-%v", pollId, token)
 }
-
 
 func NewService() Service {
 	polls, err := NewRepo()

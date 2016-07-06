@@ -12,7 +12,6 @@ type Service interface {
 	GetByEmail(email string) (models.User, error)
 }
 
-
 type service struct {
 	users Repo
 }
@@ -22,7 +21,7 @@ func (s *service) Create(email, password string) (models.User, error) {
 	if err != nil {
 
 		if err.Error() == "duplicate email" {
-			return user,err
+			return user, err
 		}
 
 		log.Fatal(err)
@@ -38,7 +37,7 @@ func (s *service) Get(id int) (models.User, error) {
 	return user, nil
 }
 
-func (s *service) GetByEmail(email string) (models.User,error)  {
+func (s *service) GetByEmail(email string) (models.User, error) {
 
 	//search by email
 	params := make(map[string]interface{})
@@ -49,7 +48,7 @@ func (s *service) GetByEmail(email string) (models.User,error)  {
 		log.Fatal(err)
 	}
 
-	return users[0],nil
+	return users[0], nil
 }
 
 //NewService returns a new instance of the Service with dependencies

@@ -5,7 +5,7 @@ import (
 )
 
 type Cache interface {
-	Get(key string) (interface{},error)
+	Get(key string) (interface{}, error)
 	Set(key string, value interface{}) error
 	SetWithTTL(key string, value interface{}, ttl int) error
 }
@@ -14,17 +14,17 @@ type redisCache struct {
 	pool redis.Pool
 }
 
-func (r *redisCache) Get(key string) (interface{},error) {
+func (r *redisCache) Get(key string) (interface{}, error) {
 	c := r.pool.Get()
 	defer c.Close()
 
 	value, err := redis.String(c.Do("GET", key))
 
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 
-	return value,nil
+	return value, nil
 }
 
 func (r *redisCache) Set(key string, value interface{}) error {
@@ -44,9 +44,9 @@ func (r *redisCache) SetWithTTL(key string, value interface{}, ttl int) error {
 	c := r.pool.Get()
 	defer c.Close()
 
-	_,err := c.Do("SETEX", key,ttl,value)
+	_, err := c.Do("SETEX", key, ttl, value)
 	if err != nil {
-		return  err
+		return err
 	}
 	return err
 }

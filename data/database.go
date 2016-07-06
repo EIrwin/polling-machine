@@ -1,11 +1,10 @@
 package data
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
 	"log"
-	"fmt"
 )
-
 
 type ConnectionInfo struct {
 	User     string

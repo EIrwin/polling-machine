@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yapp')
-  .controller('HomeCtrl', function($scope, $state,$stateParams,Users,$log,Polls,Auth,$location) {
+  .controller('HomeCtrl', function($scope, $state,$stateParams,Users,$log,Polls,Auth,$location,ENV) {
 
       activate();
       
@@ -14,6 +14,7 @@ angular.module('yapp')
 
           $scope.model = model;
           $scope.logout = logout;
+          $scope.getShareUrl = getShareUrl;
 
           Users.getUserById(model.userId)
               .then(function (user) {
@@ -32,5 +33,14 @@ angular.module('yapp')
       function logout() {
           Auth.logout();
           $state.go('login');
+      }
+
+
+
+      function getShareUrl(pollId) {
+          var host = $location.host();
+          var port = $location.port();
+          var url = "http://" + host + (ENV.name == "local" ? port : "") + "/#/share/" + pollId;
+          return url;
       }
   });

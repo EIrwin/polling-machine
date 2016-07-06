@@ -1,36 +1,35 @@
 package polls
 
 import (
-
+	"github.com/eirwin/polling-machine/data"
 	"github.com/eirwin/polling-machine/models"
 	"log"
 	"time"
-	"github.com/eirwin/polling-machine/data"
 )
 
 type Repo interface {
 	//polls
-	CreatePoll(user_id int, start, end time.Time,title string) (models.Poll, error)
+	CreatePoll(user_id int, start, end time.Time, title string) (models.Poll, error)
 	GetPoll(id int) (models.Poll, error)
-	GetPollsByUser(user_id int) ([]models.Poll,error)
-	UpdatePoll(id, user_id int, start, end time.Time,title string) (models.Poll,error)
+	GetPollsByUser(user_id int) ([]models.Poll, error)
+	UpdatePoll(id, user_id int, start, end time.Time, title string) (models.Poll, error)
 
 	//poll itemsr
 	CreateItem(poll_id int, value, display string) (models.Item, error)
 	GetPollItem(id int) (models.Item, error)
-	GetPollItemsByPollID(poll_id int) ([]models.Item,error)
-	UpdatePollItem(id,poll_id int,value,display string) (models.Item,error)
-	DeleteItem(id int) (error)
+	GetPollItemsByPollID(poll_id int) ([]models.Item, error)
+	UpdatePollItem(id, poll_id int, value, display string) (models.Item, error)
+	DeleteItem(id int) error
 
 	//poll responses
-	CreateResponse(item_id,poll_id int) (models.Response, error)
-	GetResponseCounts(poll_id int) ([]models.ResponseCount,error)
+	CreateResponse(item_id, poll_id int) (models.Response, error)
+	GetResponseCounts(poll_id int) ([]models.ResponseCount, error)
 }
 
 type pollRepo struct {
 }
 
-func (repo *pollRepo) CreatePoll(user_id int, start, end time.Time,title string) (models.Poll, error) {
+func (repo *pollRepo) CreatePoll(user_id int, start, end time.Time, title string) (models.Poll, error) {
 	conn := data.GetConnectionInfo()
 	db, err := data.GetDatabase(conn)
 	defer db.Close()
@@ -40,10 +39,10 @@ func (repo *pollRepo) CreatePoll(user_id int, start, end time.Time,title string)
 	}
 
 	poll := models.Poll{
-		Start:start,
-		End:end,
-		UserID:  user_id,
-		Title:title,
+		Start:  start,
+		End:    end,
+		UserID: user_id,
+		Title:  title,
 	}
 
 	db.NewRecord(poll)
@@ -64,14 +63,14 @@ func (repo *pollRepo) GetPoll(id int) (models.Poll, error) {
 
 	var poll models.Poll
 
-	db.First(&poll,id)
+	db.First(&poll, id)
 
 	return poll, nil
 }
 
-func (repo *pollRepo) GetPollsByUser(user_id int) ([]models.Poll,error)  {
+func (repo *pollRepo) GetPollsByUser(user_id int) ([]models.Poll, error) {
 	conn := data.GetConnectionInfo()
-	db,err := data.GetDatabase(conn)
+	db, err := data.GetDatabase(conn)
 	defer db.Close()
 
 	if err != nil {
@@ -80,13 +79,13 @@ func (repo *pollRepo) GetPollsByUser(user_id int) ([]models.Poll,error)  {
 
 	var polls []models.Poll
 
-	db.Where("user_id = ?",user_id).Find(&polls)
-	return  polls,nil
+	db.Where("user_id = ?", user_id).Find(&polls)
+	return polls, nil
 }
 
-func (repo *pollRepo) UpdatePoll(id, user_id int, start, end time.Time,title string) (models.Poll,error)  {
+func (repo *pollRepo) UpdatePoll(id, user_id int, start, end time.Time, title string) (models.Poll, error) {
 	conn := data.GetConnectionInfo()
-	db,err := data.GetDatabase(conn)
+	db, err := data.GetDatabase(conn)
 	defer db.Close()
 
 	if err != nil {
@@ -102,9 +101,8 @@ func (repo *pollRepo) UpdatePoll(id, user_id int, start, end time.Time,title str
 
 	db.Save(&poll)
 
-	return poll,nil
+	return poll, nil
 }
-
 
 func (repo *pollRepo) CreateItem(poll_id int, value, display string) (models.Item, error) {
 	conn := data.GetConnectionInfo()
@@ -116,9 +114,9 @@ func (repo *pollRepo) CreateItem(poll_id int, value, display string) (models.Ite
 	}
 
 	item := models.Item{
-		PollID:poll_id,
-		Value:value,
-		Display:display,
+		PollID:  poll_id,
+		Value:   value,
+		Display: display,
 	}
 
 	db.NewRecord(item)
@@ -139,12 +137,12 @@ func (repo *pollRepo) GetPollItem(id int) (models.Item, error) {
 
 	var item models.Item
 	item.ID = uint(id)
-	db.First(&item,id)
+	db.First(&item, id)
 
 	return item, nil
 }
 
-func (repo *pollRepo) GetPollItemsByPollID(poll_id int) ([]models.Item,error)  {
+func (repo *pollRepo) GetPollItemsByPollID(poll_id int) ([]models.Item, error) {
 	conn := data.GetConnectionInfo()
 	db, err := data.GetDatabase(conn)
 	defer db.Close()
@@ -155,12 +153,12 @@ func (repo *pollRepo) GetPollItemsByPollID(poll_id int) ([]models.Item,error)  {
 
 	var items []models.Item
 
-	db.Where("poll_id = ?",poll_id).Find(&items)
+	db.Where("poll_id = ?", poll_id).Find(&items)
 
 	return items, nil
 }
 
-func (repo *pollRepo) UpdatePollItem(id,poll_id int,value,display string) (models.Item,error)  {
+func (repo *pollRepo) UpdatePollItem(id, poll_id int, value, display string) (models.Item, error) {
 	conn := data.GetConnectionInfo()
 	db, err := data.GetDatabase(conn)
 	defer db.Close()
@@ -180,7 +178,7 @@ func (repo *pollRepo) UpdatePollItem(id,poll_id int,value,display string) (model
 	return item, nil
 }
 
-func (repo *pollRepo) DeleteItem(id int) (error)  {
+func (repo *pollRepo) DeleteItem(id int) error {
 	conn := data.GetConnectionInfo()
 	db, err := data.GetDatabase(conn)
 	defer db.Close()
@@ -196,18 +194,18 @@ func (repo *pollRepo) DeleteItem(id int) (error)  {
 	return nil
 }
 
-func (repo *pollRepo) CreateResponse(item_id,poll_id int) (models.Response, error) {
+func (repo *pollRepo) CreateResponse(item_id, poll_id int) (models.Response, error) {
 	conn := data.GetConnectionInfo()
 	db, err := data.GetDatabase(conn)
-	defer  db.Close()
+	defer db.Close()
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	response := models.Response{
-		ItemID:item_id,
-		PollID:poll_id,
+		ItemID: item_id,
+		PollID: poll_id,
 	}
 
 	db.NewRecord(response)
@@ -217,7 +215,7 @@ func (repo *pollRepo) CreateResponse(item_id,poll_id int) (models.Response, erro
 	return response, nil
 }
 
-func (repo *pollRepo) GetResponseCounts(poll_id int) ([]models.ResponseCount,error)  {
+func (repo *pollRepo) GetResponseCounts(poll_id int) ([]models.ResponseCount, error) {
 	conn := data.GetConnectionInfo()
 	db, err := data.GetDatabase(conn)
 	defer db.Close()
@@ -226,38 +224,36 @@ func (repo *pollRepo) GetResponseCounts(poll_id int) ([]models.ResponseCount,err
 		log.Fatal(err)
 	}
 
-
 	//items
 	var items []models.Item
-	db.Where("poll_id = ?",poll_id).Find(&items)
+	db.Where("poll_id = ?", poll_id).Find(&items)
 
 	lookup := make(map[int]models.Item)
 
-
 	//map lookup items
-	for key,val := range items {
+	for key, val := range items {
 		lookup[key] = val
 	}
 
 	//responses
 	var responses []models.Response
-	db.Where("poll_id = ?",poll_id).Find(&responses)
+	db.Where("poll_id = ?", poll_id).Find(&responses)
 
-	counts := make(map[int]int,len(items))
+	counts := make(map[int]int, len(items))
 
-	for _,val := range responses {
+	for _, val := range responses {
 		counts[val.ItemID]++
 	}
 
-	responseCounts := make([]models.ResponseCount,len(items))
+	responseCounts := make([]models.ResponseCount, len(items))
 
-	for key,val := range lookup {
+	for key, val := range lookup {
 		response := val
 		responseCounts[key] = models.ResponseCount{
-			ItemID:int(response.ID),
-			Display:response.Display,
-			Value:response.Value,
-			Count:counts[key],
+			ItemID:  int(response.ID),
+			Display: response.Display,
+			Value:   response.Value,
+			Count:   counts[key],
 		}
 	}
 
