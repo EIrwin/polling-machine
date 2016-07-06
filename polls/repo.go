@@ -250,10 +250,10 @@ func (repo *pollRepo) GetResponseCounts(poll_id int) ([]models.ResponseCount, er
 	for key, val := range lookup {
 		response := val
 		responseCounts[key] = models.ResponseCount{
-			ItemID:  int(response.ID),
+			ItemID:  int(val.ID),
 			Display: response.Display,
 			Value:   response.Value,
-			Count:   counts[key],
+			Count:   counts[int(val.ID)],
 		}
 	}
 

@@ -248,10 +248,9 @@ func CreatePollResponseHandler(w http.ResponseWriter, r *http.Request) {
 
 	service := NewService()
 
-	log.Println(response)
-	response, err := service.CreateResponse(response.ItemID, response.PollID, r.RemoteAddr)
+	response,err := service.CreateResponse(response.ItemID, response.PollID, r.RemoteAddr)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		log.Println(err)
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")

@@ -24,21 +24,23 @@
 						</div>
 						<h4>When do you want your poll to expire?</h4>
 						<div class="form-group">
-							<div class="col-md-6">
+							<div>
 								<p class="input-group">
-									<input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="model.date" is-open="popup1.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close"/>
-									  <span class="input-group-btn">
+																	  <span class="input-group-btn">
 										<button type="button" class="btn btn-default" ng-click="open1()"><i class="glyphicon glyphicon-calendar"></i></button>
 									  </span>
+									<input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="model.date" is-open="popup1.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close"/>
+
 								</p>
 							</div>
 						</div>
 
-						<div class="form-group col-md-3" >
+						<div >
 							<uib-timepicker ng-model="model.time" ng-change="changed()" hour-step="1" minute-step="15" show-meridian="true"></uib-timepicker>
 						</div>
 
 					</div>
+					<Br/>
 					<button  class="btn btn-primary btn-lg btn-rounded" ng-click="createPoll(model.title,model.end)">Create Poll</button>
 				</div>
 			</div>

@@ -1,48 +1,52 @@
-store:
-    # data-only container
-    image: postgres:latest # reuse postgres container
-    volumes:
-        - /var/lib/postgresql/data
-#        - ./db/postgres-setup.sql/docker-entrypoint-initdb.d/setup.sql
-    command: "true"
+version: '2'
+services:
+  store:
+      # data-only container
+      image: postgres:latest # reuse postgres container
+      volumes:
+          - /var/lib/postgresql/data
+  #        - ./db/postgres-setup.sql/docker-entrypoint-initdb.d/setup.sql
+      command: "true"
 
-postgres:
-    image: postgres:latest
-    ports:
-        - "5432:5432" # random available host port will be chosen, same as -P
-    volumes_from:
-        - store # connect postgres and the data-only container
-    environment:
-        - POSTGRES_PASSWORD=mypass
-        # you can also set the postgres username and database name
+  postgres:
+      image: postgres:latest
+      ports:
+          - "5432:5432" # random available host port will be chosen, same as -P
+      volumes_from:
+          - store # connect postgres and the data-only container
+      environment:
+          - POSTGRES_PASSWORD=mypass
+          # you can also set the postgres username and database name
 
-go:
-    build: .
-    links:
-        - redis:redis
-        - postgres:db
-    ports:
-        - "8181:8181"
+  go:
+      build: .
+      links:
+          - redis:redis
+          - postgres:db
+      ports:
+          - "8181:8181"
 
-proxy:
-    image: nginx:latest
-    ports:
-        - "80:80" # host:container
-        - "443:443"
-    volumes:
-        - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    links:
-        - site:site
-        - go:app
+  proxy:
+      image: nginx:latest
+      ports:
+          - "80:80" # host:container
+          - "443:443"
+      volumes:
+          - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      links:
+          - site:site
+          - go:app
+      depends_on:
+            - site
+            - go
 
-redis:
-    image: redis:latest
-    ports:
-        - "6379:6379"
+  redis:
+      image: redis:latest
+      ports:
+          - "6379:6379"
 
-site:
-    build: ./client
-    ports:
-        - "9000:9000"
-    command: ["gulp","development"]
-    restart: always
+  site:
+      build: ./client
+      ports:
+          - "9000:9000"
+      command: ["gulp","development"]

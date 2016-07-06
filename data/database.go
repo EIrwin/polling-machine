@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"log"
+	"os"
 )
 
 type ConnectionInfo struct {
@@ -34,18 +35,10 @@ func GetDatabase(connInfo ConnectionInfo) (*gorm.DB, error) {
 
 func GetConnectionInfo() ConnectionInfo {
 	return ConnectionInfo{
-		User:     "postgres",
-		DB:       "postgres",
+		User : "postgres",
+		DB : "postgres",
 		Password: "mypass",
-		//Host:"172.17.0.2",
-		Host: "192.168.99.100",
-		Port: "5432",
+		Host:os.Getenv("POLLINGMACHINE_POSTGRES_1_PORT_5432_TCP_ADDR"),
+		Port:os.Getenv("POLLINGMACHINE_POSTGRES_1_PORT_5432_TCP_PORT"),
 	}
-	//return ConnectionInfo{
-	//	User : "postgres",
-	//	DB : "postgres",
-	//	Password: "mypass",
-	//	Host:os.Getenv("POLLINGMACHINE_POSTGRES_1_PORT_5432_TCP_ADDR"),
-	//	Port:os.Getenv("POLLINGMACHINE_POSTGRES_1_PORT_5432_TCP_PORT"),
-	//}
 }

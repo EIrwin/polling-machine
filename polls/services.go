@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	CACHE_ENDPOINT = "192.168.99.100:6379"
+	CACHE_ENDPOINT = "POLLINGMACHINE_REDIS_1"
 )
 
 type Service interface {
@@ -119,15 +119,13 @@ func (s *service) DeleteItem(id int) error {
 }
 
 func (s *service) CreateResponse(itemId, pollId int, token string) (models.Response, error) {
-	response, err := s.polls.CreateResponse(itemId, pollId)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	//check cache for key
 	cache := cache.NewRedisCache(CACHE_ENDPOINT, 10)
 	key := generateCacheKey(pollId, token)
 	value, err := cache.Get(key)
+
+	var response models.Response
 
 	if err != nil || value.(bool) {
 		return response, err
@@ -140,11 +138,19 @@ func (s *service) CreateResponse(itemId, pollId int, token string) (models.Respo
 	}
 
 	//do check on expiration just to be sure
-	since := time.Since(poll.End)
-	log.Println(since)
-
 	//calculate remaining TTL
 	exp := getExpiration(poll.End)
+
+	//expired
+	if exp <= 0 {
+		return  response,err
+	}
+
+	//create response
+	response, err = s.polls.CreateResponse(itemId, pollId)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	//update flag
 	cache.SetWithTTL(key, true, exp)
@@ -237,10 +243,7 @@ func (s *service) GetResponseToken(pollId int) (string, error) {
 }
 
 func getExpiration(exp time.Time) int {
-	log.Printf("exp=%v,now=%v,exp-now=%v",exp,time.Now(),exp.Sub(time.Now()).Seconds())
-	log.Printf("exp=%v,now=%v,since=%v",exp,time.Now(),time.Since(exp))
-
-	return int(time.Since(exp).Seconds())
+	return int(exp.Sub(time.Now()).Seconds())
 }
 
 func generateCacheKey(pollId int, token string) string {

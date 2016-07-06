@@ -36,7 +36,7 @@
 ### Needed Improvements
 - Pool database and cache connections more efficiently.
 - Improve build process with Makefile to pass in static golang binary (Dockerfile currently is `go-getting` all dependencies causing the images to be very large.
-- Refactor `GetResponseCounts(...)` because its EXTREME inefficient. Might be better just storing count in Redis.
+- Refactor `GetResponseCounts(...)` because its EXTREMELY inefficient. Might be better just storing count in Redis.
 - Break out domains into separately executable services and use gRPC or RabbitMQ for between services.
 - Use document storage for aggregating quick snapshots for poll results.
 - Take better advantage of cache layer for data access.
