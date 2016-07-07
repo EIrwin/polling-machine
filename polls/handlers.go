@@ -321,7 +321,7 @@ func CreatePollResponseHandler(w http.ResponseWriter, r *http.Request) {
 
 	service := NewService()
 
-	response, err := service.CreateResponse(request.ItemID, request.PollID, r.RemoteAddr)
+	response, err := service.CreateResponse(request.ItemID, request.PollID, request.Token)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
