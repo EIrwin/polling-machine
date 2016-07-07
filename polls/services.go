@@ -119,20 +119,17 @@ func (s *service) CreateResponse(itemId, pollId int, token string) (models.Respo
 	//check cache for key
 	cache := cache.NewRedisCache(10)
 	key := generateCacheKey(pollId, token)
-	value, err := cache.Get(key)
-	log.Printf("key:%v",key)
-	log.Printf("value:%v",value)
+	val, err := cache.Get(key)
+
 	var response models.Response
 
-	if err != nil {
-		log.Printf("error:%v",err)
+	if err != nil || val.(int) == 0 {
 		return response, err
 	}
 
 	//retrieve related poll
 	poll, err := s.polls.GetPoll(pollId)
 	if err != nil {
-		log.Printf("error:%v",err)
 		return response, err
 	}
 
