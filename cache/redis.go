@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/garyburd/redigo/redis"
 	"os"
+	"log"
 )
 
 type Cache interface {
@@ -23,6 +24,7 @@ func (r *redisCache) Get(key string) (interface{}, error) {
 	value, err := redis.String(c.Do("GET", key))
 
 	if err != nil {
+		log.Printf("redis:%v",err)
 		return nil, err
 	}
 
