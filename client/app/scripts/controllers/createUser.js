@@ -12,7 +12,8 @@ angular.module('yapp')
 
         var model = {
             email:null,
-            password:''
+            password:'',
+            errorMessage:null
         };
 
         $scope.model = model;
@@ -22,6 +23,7 @@ angular.module('yapp')
                 .then(function(user){
                     $state.go('login');
                 },function(error){
+                    
                     $log.error(error);
                 })
         }
