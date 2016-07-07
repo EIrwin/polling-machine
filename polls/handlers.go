@@ -26,25 +26,36 @@ const (
 )
 
 func CreatePollHandler(w http.ResponseWriter, r *http.Request) {
-	var poll models.Poll
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
+	var request createPollRequest
 	decoder := json.NewDecoder(r.Body)
 
-	if err := decoder.Decode(&poll); err != nil {
+	if err := decoder.Decode(&request); err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
+	if valid,msg := request.Validate(); !valid {
+		w.WriteHeader(http.StatusInternalServerError)
+		response :=  createPollResponse{
+			Error:msg,
+		}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
 	service := NewService()
 
-	poll, err := service.CreatePoll(poll.UserID, poll.End, poll.Title)
+	poll, err := service.CreatePoll(request.UserID,request.End,request.Title)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(poll); err != nil {
 		log.Fatal(err)
@@ -52,6 +63,9 @@ func CreatePollHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetPollByIDHandler(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -68,7 +82,6 @@ func GetPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(poll); err != nil {
 		panic(err)
@@ -76,6 +89,9 @@ func GetPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetPollsByUserIDHandler(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
 	user_id, err := strconv.Atoi(r.FormValue("user_id"))
 	if err != nil {
 		log.Fatal(err)
@@ -90,7 +106,6 @@ func GetPollsByUserIDHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(polls); err != nil {
 		log.Println(err)
@@ -98,21 +113,32 @@ func GetPollsByUserIDHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdatePollHandler(w http.ResponseWriter, r *http.Request) {
-	var poll models.Poll
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
+	var request updatePollRequest
 	decoder := json.NewDecoder(r.Body)
 
-	if err := decoder.Decode(&poll); err != nil {
+	if err := decoder.Decode(&request); err != nil {
 		log.Println(err)
+	}
+
+	if valid,msg := request.Validate(); !valid {
+		w.WriteHeader(http.StatusInternalServerError)
+		response :=  updatePollResponse{
+			Error:msg,
+		}
+		json.NewEncoder(w).Encode(response)
+		return
 	}
 
 	service := NewService()
 
-	poll, err := service.UpdatePoll(int(poll.ID), poll.UserID, poll.Start, poll.End, poll.Title)
+	poll, err := service.UpdatePoll(int(request.ID),request.UserID,request.Start,request.End, request.Title)
 	if err != nil {
 		log.Println(err)
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(poll); err != nil {
 		log.Println(err)
@@ -120,83 +146,109 @@ func UpdatePollHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreatePollItemHandler(w http.ResponseWriter, r *http.Request) {
-	var item models.Item
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
+	var request createPollItemRequest
 	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&item); err != nil {
+	if err := decoder.Decode(&request); err != nil {
 		log.Fatal(err)
+	}
+
+	if valid,msg := request.Validate(); !valid {
+		w.WriteHeader(http.StatusInternalServerError)
+		response :=  createPollItemResponse{
+			Error:msg,
+		}
+		json.NewEncoder(w).Encode(response)
+		return
 	}
 
 	service := NewService()
 
-	item, err := service.CreateItem(item.PollID, item.Value, item.Display)
+	item, err := service.CreateItem(request.PollID,request.Value,request.Display)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(item); err != nil {
-		panic(err)
+		log.Println(err)
 	}
 }
 
 func GetPollItemByIDHandler(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["item_id"])
 	if err != nil {
-		log.Fatal("invalid poll id format")
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	service := NewService()
 
 	item, err := service.GetPollItem(id)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(item); err != nil {
-		panic(err)
+		log.Println(err)
 	}
 }
 
 func GetPollItemsByPollIDHandler(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		log.Fatal("invalid poll id format")
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	service := NewService()
 
 	items, err := service.GetPollItemsByPollID(id)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(items); err != nil {
-		panic(err)
+		log.Println(err)
 	}
 }
 
 func UpdatePollItemHandler(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["item_id"])
 
 	if err != nil {
-		log.Fatal("invalid item id format")
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	poll_id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		log.Fatal("invalid poll id format")
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	var item models.Item
@@ -204,6 +256,7 @@ func UpdatePollItemHandler(w http.ResponseWriter, r *http.Request) {
 	if err := decoder.Decode(&item); err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	service := NewService()
@@ -211,65 +264,84 @@ func UpdatePollItemHandler(w http.ResponseWriter, r *http.Request) {
 	items, err := service.UpdatePollItem(id, poll_id, item.Value, item.Display)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(items); err != nil {
-		panic(err)
+		log.Println(err)
 	}
 }
 
 func DeletePollItemHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		log.Fatal("invalid poll id format")
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	service := NewService()
 
 	items, err := service.GetPollItemsByPollID(id)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(items); err != nil {
-		panic(err)
+		log.Println(err)
 	}
 }
 
 func CreatePollResponseHandler(w http.ResponseWriter, r *http.Request) {
-	var response models.Response
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
+	var request createPollResponseRequest
 	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&response); err != nil {
+	if err := decoder.Decode(&request); err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if valid,msg := request.Validate(); !valid {
+		w.WriteHeader(http.StatusInternalServerError)
+		response :=  createPollResponseResponse{
+			Error:msg,
+		}
+		json.NewEncoder(w).Encode(response)
+		return
 	}
 
 	service := NewService()
 
-	response, err := service.CreateResponse(response.ItemID, response.PollID, r.RemoteAddr)
+	response, err := service.CreateResponse(request.ItemID, request.PollID, r.RemoteAddr)
 	if err != nil {
 		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(response); err != nil {
-		panic(err)
+		log.Println(err)
 	}
 }
 
 func GetResponseCountsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		log.Fatal("invalid poll id format")
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	service := NewService()
@@ -278,21 +350,24 @@ func GetResponseCountsHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(counts); err != nil {
-		panic(err)
+		log.Println(err)
 	}
 }
 
 func GetResponseTokenHandler(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		log.Fatal("invalid poll id format")
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	service := NewService()
@@ -302,11 +377,11 @@ func GetResponseTokenHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(counts); err != nil {
-		panic(err)
+		log.Println(err)
 	}
 }

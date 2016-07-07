@@ -65,14 +65,15 @@ type updatePollItemResponse struct {
 	Display string `json:"display"`
 }
 
-type createPollResponseRequest struct  {
+type createPollResponseRequest struct {
 	ItemID int    `json:"item_id"`
 	PollID int    `json:"poll_id,string"`
 	Token  string `json:"token" gorm:"-"`
 }
 
-type createPollResponseResponse struct  {
+type createPollResponseResponse struct {
 	gorm.Model
+	Error  string `json:"error"`
 	ItemID int    `json:"item_id"`
 	PollID int    `json:"poll_id,string"`
 }
@@ -118,7 +119,7 @@ func (r *createPollItemRequest) Validate() (bool, string) {
 	return true, msg
 }
 
-func (r *updatePollItemRequest) Validate() (bool,string)  {
+func (r *updatePollItemRequest) Validate() (bool, string) {
 	var msg string
 	if len(r.Value) == 0 {
 		return false, "Value cannot be empty"
@@ -134,7 +135,7 @@ func (r *updatePollItemRequest) Validate() (bool,string)  {
 	return true, msg
 }
 
-func (r *createPollResponseRequest) Validate() (bool,string)  {
+func (r *createPollResponseRequest) Validate() (bool, string) {
 	var msg string
 
 	if len(r.Token) == 0 {
@@ -146,7 +147,7 @@ func (r *createPollResponseRequest) Validate() (bool,string)  {
 	}
 
 	if r.ItemID <= 0 {
-		return  false,"Invalid ItemID"
+		return false, "Invalid ItemID"
 	}
 
 	return true, msg
