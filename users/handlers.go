@@ -30,10 +30,10 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if valid,msg := request.Validate(); !valid {
+	if valid, msg := request.Validate(); !valid {
 		w.WriteHeader(http.StatusBadRequest)
 		response := &createUserResponse{
-			Error:msg,
+			Error: msg,
 		}
 		json.NewEncoder(w).Encode(response)
 		return
@@ -50,7 +50,6 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-
 
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(user); err != nil {
@@ -81,5 +80,4 @@ func GetUserByIdHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-
 }

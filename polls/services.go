@@ -139,7 +139,7 @@ func (s *service) CreateResponse(itemId, pollId int, token string) (models.Respo
 
 	//expired
 	if exp <= 0 {
-		return  response,err
+		return response, err
 	}
 
 	//create response

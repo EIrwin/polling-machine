@@ -1,9 +1,9 @@
 package cache
 
 import (
+	"fmt"
 	"github.com/garyburd/redigo/redis"
 	"os"
-	"fmt"
 )
 
 type Cache interface {
@@ -56,9 +56,9 @@ func (r *redisCache) SetWithTTL(key string, value interface{}, ttl int) error {
 func NewRedisCache(maxConnections int) Cache {
 	host := os.Getenv("REDIS_HOST")
 	port := os.Getenv("REDIS_PORT")
-	endpoint := fmt.Sprintf("%v:%v",host,port)
+	endpoint := fmt.Sprintf("%v:%v", host, port)
 	pool := redis.NewPool(func() (redis.Conn, error) {
-		c, err := redis.Dial("tcp",endpoint)
+		c, err := redis.Dial("tcp", endpoint)
 
 		if err != nil {
 			return nil, err

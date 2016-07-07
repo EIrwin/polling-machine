@@ -32,6 +32,7 @@ func CreatePollHandler(w http.ResponseWriter, r *http.Request) {
 	if err := decoder.Decode(&poll); err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	service := NewService()
@@ -40,12 +41,13 @@ func CreatePollHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(poll); err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 }
 
@@ -53,8 +55,8 @@ func GetPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		log.Fatal("invalid poll id format")
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	service := NewService()
@@ -63,6 +65,7 @@ func GetPollByIDHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -83,13 +86,14 @@ func GetPollsByUserIDHandler(w http.ResponseWriter, r *http.Request) {
 	polls, err := service.GetPollByUser(user_id)
 	if err != nil {
 		log.Println(err)
-		//w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(polls); err != nil {
-		panic(err)
+		log.Println(err)
 	}
 }
 
@@ -111,7 +115,7 @@ func UpdatePollHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(poll); err != nil {
-		panic(err)
+		log.Println(err)
 	}
 }
 
@@ -248,7 +252,7 @@ func CreatePollResponseHandler(w http.ResponseWriter, r *http.Request) {
 
 	service := NewService()
 
-	response,err := service.CreateResponse(response.ItemID, response.PollID, r.RemoteAddr)
+	response, err := service.CreateResponse(response.ItemID, response.PollID, r.RemoteAddr)
 	if err != nil {
 		log.Println(err)
 	}
