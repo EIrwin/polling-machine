@@ -121,10 +121,10 @@ func (s *service) CreateResponse(itemId, pollId int, token string) (models.Respo
 	key := generateCacheKey(pollId, token)
 	value, err := cache.Get(key)
 	log.Printf("key:%v",key)
-
+	log.Printf("value:%v",value)
 	var response models.Response
 
-	if err != nil || value.(bool) {
+	if err != nil {
 		log.Printf("error:%v",err)
 		return response, err
 	}
