@@ -81,7 +81,6 @@ func (u *userRepository) Find(params map[string]interface{}) ([]models.User, err
 	defer db.Close()
 
 	if err != nil {
-		log.Print("here")
 		log.Fatal(err)
 	}
 

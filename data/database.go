@@ -38,7 +38,9 @@ func GetConnectionInfo() ConnectionInfo {
 		User : "postgres",
 		DB : "postgres",
 		Password: "mypass",
-		Host:os.Getenv("POLLINGMACHINE_POSTGRES_1_PORT_5432_TCP_ADDR"),
-		Port:os.Getenv("POLLINGMACHINE_POSTGRES_1_PORT_5432_TCP_PORT"),
+		Host:os.Getenv("DB_HOST"),
+		Port: os.Getenv("DB_PORT"),
+		//Host:os.Getenv("POLLINGMACHINE_POSTGRES_1_PORT_5432_TCP_ADDR"),
+		//Port:os.Getenv("POLLINGMACHINE_POSTGRES_1_PORT_5432_TCP_PORT"),
 	}
 }

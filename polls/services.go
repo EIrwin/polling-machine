@@ -14,11 +14,6 @@ import (
 	"time"
 )
 
-const (
-	CACHE_ENDPOINT = "192.168.99.100:6379"
-	//CACHE_ENDPOINT = "redis"
-)
-
 type Service interface {
 	//polls
 	CreatePoll(user_id int, end time.Time, title string) (models.Poll, error)
@@ -122,7 +117,7 @@ func (s *service) DeleteItem(id int) error {
 func (s *service) CreateResponse(itemId, pollId int, token string) (models.Response, error) {
 
 	//check cache for key
-	cache := cache.NewRedisCache(CACHE_ENDPOINT, 10)
+	cache := cache.NewRedisCache(10)
 	key := generateCacheKey(pollId, token)
 	value, err := cache.Get(key)
 
@@ -233,7 +228,7 @@ func (s *service) GetResponseToken(pollId int) (string, error) {
 	key := generateCacheKey(pollId, token)
 
 	//store consumption flag with expiration
-	cache := cache.NewRedisCache(CACHE_ENDPOINT, 10)
+	cache := cache.NewRedisCache(10)
 	err = cache.SetWithTTL(key, false, exp)
 
 	if err != nil {

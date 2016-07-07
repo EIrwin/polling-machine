@@ -25,6 +25,11 @@ services:
           - postgres:db
       ports:
           - "8181:8181"
+      environment:
+          - DB_HOST=192.168.99.100
+          - DB_PORT=5432
+          - REDIS_HOST=192.68.99.100
+          - REDIS_PORT=6379
 
   proxy:
       image: nginx:latest
