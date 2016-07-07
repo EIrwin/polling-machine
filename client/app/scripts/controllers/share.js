@@ -63,7 +63,7 @@ angular.module('yapp')
           //do local check for slug for dupe check
           $scope.model.loading = true;
           $scope.model.submitted = true;
-          Responses.createResponse(item_id,poll_id)
+          Responses.createResponse(item_id,poll_id,$scope.model.token)
               .then(function(resp){
                   //show success message
                   $scope.model.loading = false;

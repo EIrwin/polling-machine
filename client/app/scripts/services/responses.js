@@ -5,9 +5,7 @@ angular.module('yapp')
 
         var self = this;
 
-        this.createResponse = function(item_id,poll_id){
-            var key = 'pm-' + poll_id;
-            var token = $localstorage.get(key)
+        this.createResponse = function(item_id,poll_id,token){
             var d = $q.defer();
             var requestUrl = APIHelper.fillUrl(APIHelper.endpoints.responses, {id:poll_id});
             var data = {
