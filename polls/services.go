@@ -123,7 +123,7 @@ func (s *service) CreateResponse(itemId, pollId int, token string) (models.Respo
 
 	var response models.Response
 
-	if err != nil || val.(int) == "0" {
+	if err != nil || val == "0" {
 		return response, err
 	}
 
