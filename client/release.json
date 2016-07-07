@@ -1,3 +1,3 @@
 {
-  "ENV": {"name": "release", "apiEndpoint": "http://proxy.d540a2e1.svc.dockerapp.io/pm/api/v1"}
+  "ENV": {"name": "release", "apiEndpoint": "http://brandfolder.hireerichesawesome.com/pm/api/v1"}
 }
