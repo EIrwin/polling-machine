@@ -5,8 +5,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/eirwin/polling-machine/models"
-
 	"github.com/gorilla/mux"
 	"strconv"
 )
@@ -23,26 +21,37 @@ const (
 
 //CreateUserHandler
 func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
-	var user models.User
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
+	var request createUserRequest
 	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&user); err != nil {
+	if err := decoder.Decode(&request); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
+	if valid,msg := request.Validate(); !valid {
+		w.WriteHeader(http.StatusBadRequest)
+		response := &createUserResponse{
+			Error:msg,
+		}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
 	service := NewService()
 	user, err := service.Create(
-		user.Email,
-		user.Password)
+		request.Email,
+		request.Password)
 
 	if err != nil {
 		if err.Error() == "duplicate email" {
 			log.Println(err)
 			w.WriteHeader(http.StatusBadRequest)
+			return
 		}
-		log.Fatal(err)
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(user); err != nil {
 		panic(err)
@@ -56,20 +65,21 @@ func GetUserByIdHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(vars["id"])
 
 	if err != nil {
-		log.Fatal("invalid id format")
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	service := NewService()
 	user, err := service.Get(id)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(user); err != nil {
-		panic(err)
+		log.Println(err)
+		return
 	}
 
 }
