@@ -1,8 +1,8 @@
 package users
 
 import (
-	"github.com/eirwin/code-challenge/models"
 	"github.com/jinzhu/gorm"
+	"github.com/eirwin/polling-machine/models"
 )
 
 type createUserRequest struct {
@@ -18,7 +18,7 @@ type createUserResponse struct {
 
 type getUserResponse struct {
 	Error string `json:"error"`
-	models.User
+	User models.User
 }
 
 func (r *createUserRequest) Validate() (bool, string) {
